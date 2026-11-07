@@ -24,7 +24,7 @@
             color: #f8fafc;
             overflow-x: hidden;
         }
-        /* أنيميشن شاشة البداية الفضائية */
+        /* شاشة البداية الفضائية */
         #cosmicSplashScreen {
             background: radial-gradient(circle at center, #111629 0%, #05070c 70%, #020306 100%);
             transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
@@ -78,11 +78,18 @@
             box-shadow: inset 0 2px 6px rgba(255,255,255,0.35), 0 8px 20px rgba(0,0,0,0.65);
         }
         @keyframes popCenter {
-            0% { transform: scale(0.8); opacity: 0; }
+            0% { transform: scale(0.82); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
         .center-pop-anim {
-            animation: popCenter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: popCenter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .page-fade {
+            animation: fadeInPage 0.25s ease-out forwards;
+        }
+        @keyframes fadeInPage {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #090d16; }
@@ -96,7 +103,6 @@
     <!-- ========================================================================= -->
     <div id="cosmicSplashScreen" class="fixed inset-0 z-[200] flex flex-col items-center justify-center p-6 select-none">
         <div class="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center cosmic-logo-float">
-            <!-- SVG اللوجو الفضائي العالمي المدمج (نفس أيقونة الفون) -->
             <svg viewBox="0 0 512 512" class="w-full h-full">
                 <defs>
                     <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -114,20 +120,14 @@
                         <feComposite in="SourceGraphic" in2="blur" operator="over"/>
                     </filter>
                 </defs>
-                <!-- نجوم خلفية -->
                 <circle cx="90" cy="95" r="3" fill="#fde047" opacity="0.8"/>
                 <circle cx="420" cy="110" r="2.5" fill="#c084fc" opacity="0.9"/>
                 <circle cx="110" cy="400" r="2" fill="#38bdf8" opacity="0.7"/>
                 <circle cx="410" cy="390" r="3.5" fill="#f59e0b" opacity="0.8"/>
-                <!-- الحلقة الفضائية المضيئة -->
                 <circle cx="256" cy="256" r="165" fill="#090d1a" stroke="url(#orbitGrad)" stroke-width="10" filter="url(#neonGlow)"/>
-                <!-- عجلة السيكل الداخلية -->
                 <circle cx="256" cy="256" r="128" fill="none" stroke="#334155" stroke-width="5" stroke-dasharray="16 12" class="cosmic-orbit-spin"/>
-                <!-- حرف S المعدني ثلاثي الأبعاد -->
                 <path d="M310 155 C260 125, 175 145, 180 205 C185 260, 325 245, 330 315 C335 375, 240 395, 190 355" fill="none" stroke="url(#sMetalGrad)" stroke-width="44" stroke-linecap="round"/>
-                <!-- مسار الصاروخ الناري المائل -->
                 <ellipse cx="256" cy="256" rx="220" ry="68" transform="rotate(-32 256 256)" fill="none" stroke="url(#orbitGrad)" stroke-width="14" stroke-linecap="round" filter="url(#neonGlow)"/>
-                <!-- الصاروخ الفضائي السريع -->
                 <g transform="translate(345, 145) rotate(-35)">
                     <path d="M0 -30 C16 -10, 16 18, 0 32 C-16 18, -16 -10, 0 -30 Z" fill="#f8fafc" stroke="#f59e0b" stroke-width="4"/>
                     <circle cx="0" cy="-2" r="6" fill="#f59e0b"/>
@@ -152,23 +152,15 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- نافذة الإشعارات والتنبيهات في منتصف الشاشة تماماً (Center Screen Alert)     -->
+    <!-- إشعار منتصف الشاشة الذاتي (يظهر لمدة ثانيتين ويختفي لوحده تلقائياً)        -->
     <!-- ========================================================================= -->
-    <div id="centerScreenAlertModal" class="fixed inset-0 bg-black/85 z-[150] hidden items-center justify-center p-4">
-        <div class="center-pop-anim bg-slate-900 border-2 border-amber-400 rounded-3xl max-w-md w-full p-6 text-center shadow-[0_0_50px_rgba(245,158,11,0.35)] space-y-4">
-            <div id="centerAlertIconBox" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 text-slate-950 flex items-center justify-center text-3xl font-black mx-auto shadow-lg">
-                🚀
+    <div id="autoCenterToastModal" class="fixed inset-0 z-[180] hidden items-center justify-center p-4 pointer-events-none">
+        <div class="center-pop-anim bg-black/95 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-5 text-center shadow-[0_0_50px_rgba(245,158,11,0.45)] space-y-2">
+            <div id="autoToastIcon" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 text-slate-950 flex items-center justify-center text-2xl font-black mx-auto shadow-md">
+                ✅
             </div>
-            <span id="centerAlertBadge" class="inline-block bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] font-black px-3 py-0.5 rounded-full">
-                إشعار ثانية سيكل
-            </span>
-            <h3 id="centerAlertTitle" class="text-base sm:text-lg font-black text-white leading-snug"></h3>
-            <div id="centerAlertBody" class="text-xs sm:text-sm text-slate-300 font-bold leading-relaxed bg-black/80 p-3.5 rounded-2xl border border-slate-800"></div>
-            <div id="centerAlertActions" class="flex flex-col sm:flex-row gap-2 pt-1">
-                <button onclick="closeCenterScreenAlert()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-2xl text-xs sm:text-sm shadow-lg transition">
-                    تمام، موافق 👍
-                </button>
-            </div>
+            <h3 id="autoToastTitle" class="text-sm sm:text-base font-black text-white leading-snug"></h3>
+            <div id="autoToastSub" class="text-xs text-amber-300 font-bold"></div>
         </div>
     </div>
 
@@ -203,7 +195,6 @@
     <!-- الهيدر العلوي (اللوجو الفضائي يفتح لوحة الإدارة ليك انت فقط بـ 5 ضغطات) -->
     <header class="bg-black/95 text-white sticky top-[44px] z-40 shadow-2xl border-b border-slate-900">
         <div class="max-w-7xl mx-auto px-4 py-2.5 flex justify-between items-center gap-3">
-            <!-- اللوجو الفضائي (5 ضغطات هنا فقط تفتح لوحة الإدارة السرية) -->
             <div class="flex items-center gap-2.5 select-none cursor-pointer" id="secretLogoTrigger">
                 <div class="w-11 h-11 rounded-2xl bg-slate-950 border border-amber-500/60 p-1 shadow-md flex items-center justify-center">
                     <img id="headerCosmicLogoImg" src="" alt="ثانية سيكل" class="w-full h-full object-contain">
@@ -217,9 +208,8 @@
                 </div>
             </div>
 
-            <!-- أزرار البوابتين فقط -->
             <nav id="mainHeaderNav" class="flex items-center gap-2">
-                <button onclick="switchTab('client')" id="btn-client" class="px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 font-black text-xs transition shadow-md flex items-center gap-1.5">
+                <button onclick="switchTab('client'); goToClientPage('home');" id="btn-client" class="px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 font-black text-xs transition shadow-md flex items-center gap-1.5">
                     <i class="fa-solid fa-grip"></i> <span>الرئيسية</span>
                 </button>
                 <button onclick="switchTab('captain')" id="btn-captain" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-xs transition flex items-center gap-1.5">
@@ -235,83 +225,211 @@
     <main class="max-w-5xl mx-auto px-4 py-5 w-full flex-1">
 
         <!-- ========================================================================= -->
-        <!-- 1. واجهة العميل (أيقونات فقط في الصفحة الرئيسية + الأقسام الديناميكية)    -->
+        <!-- 1. بوابة العميل المقسمة إلى 4 صفحات مستقلة متتالية (Wizard Pages)         -->
         <!-- ========================================================================= -->
-        <div id="tab-client" class="space-y-6">
+        <div id="tab-client">
 
-            <!-- شريط البحث الذكي -->
-            <div class="relative">
-                <input type="text" id="quickStoreSearchInput" onkeyup="handleQuickStoreSearch(this.value)" placeholder="🔍 ابحث عن مطعم، حلويات، صيدلية، أو وجبة..." class="w-full p-3.5 pr-11 rounded-2xl bg-slate-900/95 border border-slate-800 focus:border-amber-400 text-white text-xs sm:text-sm font-bold shadow-xl outline-none transition">
-                <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-amber-400 text-sm"></i>
-            </div>
-
-            <!-- أ) شبكة الأيقونات الرئيسية الديناميكية (تشمل المطاعم، الحلويات، الصيدليات، وأي قسم جديد تضيفه) -->
-            <div id="mainCategoriesDynamicGrid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3"></div>
-
-            <!-- ب) الأيقونات الـ 3 الصغيرة المساعدة (طيار قريب | طلباتي والأكواد | التقييم) -->
-            <div class="grid grid-cols-3 gap-2.5">
-                <button onclick="openNearbyCaptainModal()" class="neuro-card bg-slate-900/90 hover:bg-slate-800 border border-emerald-500/50 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-center gap-2 text-center shadow-md">
-                    <span class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-lg shrink-0 radar-pulse">📡</span>
-                    <div class="text-center sm:text-right">
-                        <span class="text-xs font-black text-emerald-300 block">طيار قريب منك</span>
-                        <span class="text-[10px] text-slate-400 font-bold hidden sm:block">ابعت معاه فوراً</span>
-                    </div>
-                </button>
-
-                <button onclick="openClientOrdersModal()" class="neuro-card bg-slate-900/90 hover:bg-slate-800 border border-amber-500/50 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-center gap-2 text-center shadow-md">
-                    <span class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-lg shrink-0">📦</span>
-                    <div class="text-center sm:text-right">
-                        <span class="text-xs font-black text-amber-300 block">طلباتي والأكواد</span>
-                        <span id="miniOrdersCountText" class="text-[10px] text-slate-400 font-bold block">كود الطلب</span>
-                    </div>
-                </button>
-
-                <button onclick="openReviewsAndRateModal()" class="neuro-card bg-slate-900/90 hover:bg-slate-800 border border-purple-500/50 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-center gap-2 text-center shadow-md">
-                    <span class="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-lg shrink-0">⭐</span>
-                    <div class="text-center sm:text-right">
-                        <span class="text-xs font-black text-purple-300 block">التقييم والآراء</span>
-                        <span id="miniReviewsCountText" class="text-[10px] text-slate-400 font-bold block">قيّم الطيار</span>
-                    </div>
-                </button>
-            </div>
-
-            <!-- ج) أيقونات المطاعم الـ 4 الفرعية (تظهر عند الضغط على المطاعم) -->
-            <div id="restaurantSubcategoriesBox" class="hidden bg-slate-900/95 border-2 border-orange-500/70 rounded-3xl p-4 shadow-2xl space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs sm:text-sm font-black text-orange-300">🍽️ اختر قسم المطاعم:</span>
-                    <button onclick="closeCategoryBrowser()" class="text-xs text-slate-400 hover:text-white font-bold px-2">✕</button>
+            <!-- ================================================================= -->
+            <!-- الصفحة 1: الشاشة الرئيسية (أيقونات الخدمات فقط)                   -->
+            <!-- ================================================================= -->
+            <div id="client-page-home" class="page-fade space-y-6">
+                <!-- شريط البحث الذكي -->
+                <div class="relative">
+                    <input type="text" id="quickStoreSearchInput" onkeyup="handleQuickStoreSearch(this.value)" placeholder="🔍 ابحث عن مطعم، حلويات، صيدلية، أو وجبة..." class="w-full p-3.5 pr-11 rounded-2xl bg-slate-900/95 border border-slate-800 focus:border-amber-400 text-white text-xs sm:text-sm font-bold shadow-xl outline-none transition">
+                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-amber-400 text-sm"></i>
                 </div>
 
-                <div class="grid grid-cols-4 gap-2.5">
-                    <div onclick="filterStoresByCategory('grills')" class="neuro-card cursor-pointer bg-black border border-red-500/60 rounded-2xl p-2.5 text-center space-y-1">
-                        <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-red-500 to-orange-700 flex items-center justify-center text-2xl icon-3d-badge">🥩</div>
-                        <span class="text-[11px] sm:text-xs font-black text-red-300 block">مشويات</span>
-                    </div>
-                    <div onclick="filterStoresByCategory('seafood')" class="neuro-card cursor-pointer bg-black border border-sky-500/60 rounded-2xl p-2.5 text-center space-y-1">
-                        <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-sky-400 to-blue-700 flex items-center justify-center text-2xl icon-3d-badge">🐟</div>
-                        <span class="text-[11px] sm:text-xs font-black text-sky-300 block">أسماك</span>
-                    </div>
-                    <div onclick="filterStoresByCategory('shami')" class="neuro-card cursor-pointer bg-black border border-amber-500/60 rounded-2xl p-2.5 text-center space-y-1">
-                        <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-2xl icon-3d-badge">🌯</div>
-                        <span class="text-[11px] sm:text-xs font-black text-amber-300 block">شامي</span>
-                    </div>
-                    <div onclick="filterStoresByCategory('koshary')" class="neuro-card cursor-pointer bg-black border border-orange-500/60 rounded-2xl p-2.5 text-center space-y-1">
-                        <div class="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-orange-400 to-amber-700 flex items-center justify-center text-2xl icon-3d-badge">🍲</div>
-                        <span class="text-[11px] sm:text-xs font-black text-orange-300 block">كشري</span>
-                    </div>
+                <!-- شبكة الأيقونات الرئيسية الديناميكية -->
+                <div id="mainCategoriesDynamicGrid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3"></div>
+
+                <!-- الأيقونات الـ 3 الصغيرة المساعدة -->
+                <div class="grid grid-cols-3 gap-2.5 pt-2">
+                    <button onclick="openNearbyCaptainModal()" class="neuro-card bg-slate-900/90 hover:bg-slate-800 border border-emerald-500/50 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-center gap-2 text-center shadow-md">
+                        <span class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-lg shrink-0 radar-pulse">📡</span>
+                        <div class="text-center sm:text-right">
+                            <span class="text-xs font-black text-emerald-300 block">طيار قريب منك</span>
+                            <span class="text-[10px] text-slate-400 font-bold hidden sm:block">ابعت معاه فوراً</span>
+                        </div>
+                    </button>
+
+                    <button onclick="openClientOrdersModal()" class="neuro-card bg-slate-900/90 hover:bg-slate-800 border border-amber-500/50 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-center gap-2 text-center shadow-md">
+                        <span class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-lg shrink-0">📦</span>
+                        <div class="text-center sm:text-right">
+                            <span class="text-xs font-black text-amber-300 block">طلباتي والأكواد</span>
+                            <span id="miniOrdersCountText" class="text-[10px] text-slate-400 font-bold block">كود الطلب</span>
+                        </div>
+                    </button>
+
+                    <button onclick="openReviewsAndRateModal()" class="neuro-card bg-slate-900/90 hover:bg-slate-800 border border-purple-500/50 rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-center gap-2 text-center shadow-md">
+                        <span class="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-lg shrink-0">⭐</span>
+                        <div class="text-center sm:text-right">
+                            <span class="text-xs font-black text-purple-300 block">التقييم والآراء</span>
+                            <span id="miniReviewsCountText" class="text-[10px] text-slate-400 font-bold block">قيّم الطيار</span>
+                        </div>
+                    </button>
                 </div>
             </div>
 
-            <!-- د) شبكة عرض المحلات (وعند الضغط على أي محل يفتح المنيو المصور الخاص به) -->
-            <div id="storesDisplayGridBox" class="hidden bg-slate-900/95 border-2 border-amber-500/60 rounded-3xl p-4 shadow-2xl space-y-3">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+            <!-- ================================================================= -->
+            <!-- الصفحة 2: صفحة اختيار المحل / المطعم (تفتح عند الضغط على أيقونة)   -->
+            <!-- ================================================================= -->
+            <div id="client-page-stores" class="hidden page-fade space-y-5">
+                <!-- شريط علوي للرجوع للرئيسية -->
+                <div class="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 flex justify-between items-center shadow-lg">
+                    <div class="flex items-center gap-2.5">
+                        <span id="storesPageHeaderIcon" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl">🍔</span>
+                        <div>
+                            <span id="storesDisplayBadge" class="text-[10px] text-amber-400 font-black block">الخطوة 1 من 3 • اختر المكان</span>
+                            <h2 id="storesDisplayTitle" class="text-sm sm:text-base font-black text-white">اختر المطعم أو المحل</h2>
+                        </div>
+                    </div>
+                    <button onclick="goToClientPage('home')" class="bg-black hover:bg-slate-800 text-amber-400 border border-amber-500/40 px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 shadow">
+                        <span>رجوع للرئيسية</span> <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+
+                <!-- شريط أقسام المطاعم الـ 4 الفرعية (يظهر فقط داخل صفحة المطاعم) -->
+                <div id="restaurantSubcategoriesBox" class="hidden bg-slate-900/90 border border-orange-500/50 rounded-2xl p-3.5 space-y-2.5">
+                    <span class="text-xs font-black text-orange-300 block">🍽️ صنّف المطاعم حسب نوع الأكل:</span>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div onclick="filterStoresByCategory('grills', true)" id="subbtn-grills" class="neuro-card cursor-pointer bg-black border border-red-500/60 rounded-2xl p-2 text-center space-y-1">
+                            <div class="w-10 h-10 mx-auto rounded-xl bg-gradient-to-br from-red-500 to-orange-700 flex items-center justify-center text-xl">🥩</div>
+                            <span class="text-[11px] font-black text-red-300 block">مشويات</span>
+                        </div>
+                        <div onclick="filterStoresByCategory('seafood', true)" id="subbtn-seafood" class="neuro-card cursor-pointer bg-black border border-sky-500/60 rounded-2xl p-2 text-center space-y-1">
+                            <div class="w-10 h-10 mx-auto rounded-xl bg-gradient-to-br from-sky-400 to-blue-700 flex items-center justify-center text-xl">🐟</div>
+                            <span class="text-[11px] font-black text-sky-300 block">أسماك</span>
+                        </div>
+                        <div onclick="filterStoresByCategory('shami', true)" id="subbtn-shami" class="neuro-card cursor-pointer bg-black border border-amber-500/60 rounded-2xl p-2 text-center space-y-1">
+                            <div class="w-10 h-10 mx-auto rounded-xl bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-xl">🌯</div>
+                            <span class="text-[11px] font-black text-amber-300 block">شامي</span>
+                        </div>
+                        <div onclick="filterStoresByCategory('koshary', true)" id="subbtn-koshary" class="neuro-card cursor-pointer bg-black border border-orange-500/60 rounded-2xl p-2 text-center space-y-1">
+                            <div class="w-10 h-10 mx-auto rounded-xl bg-gradient-to-br from-orange-400 to-amber-700 flex items-center justify-center text-xl">🍲</div>
+                            <span class="text-[11px] font-black text-orange-300 block">كشري</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- كروت المحلات المتاحة -->
+                <div id="storesCardsContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-3.5"></div>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- الصفحة 3: صفحة المنيو واختيار الوجبات بالصور (تفتح بعد اختيار المحل) -->
+            <!-- ================================================================= -->
+            <div id="client-page-menu" class="hidden page-fade space-y-5">
+                <!-- شريط علوي للرجوع لقائمة المحلات -->
+                <div class="bg-slate-900/95 border border-amber-500/50 rounded-2xl p-4 flex justify-between items-center shadow-lg">
                     <div>
-                        <span id="storesDisplayBadge" class="text-[10px] bg-amber-500 text-slate-950 font-black px-2 py-0.5 rounded-full">اختر المحل</span>
-                        <h3 id="storesDisplayTitle" class="text-sm sm:text-base font-black text-white mt-0.5">الأماكن المتاحة</h3>
+                        <span id="menuModalZoneBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-black px-2.5 py-0.5 rounded-full"></span>
+                        <h2 id="menuModalStoreTitle" class="text-base sm:text-lg font-black text-amber-400 mt-1"></h2>
+                        <p id="menuModalStoreSpec" class="text-xs text-slate-400 font-bold"></p>
                     </div>
-                    <button onclick="closeCategoryBrowser()" class="bg-black text-slate-300 px-3 py-1 rounded-xl text-xs font-bold border border-slate-700">✕</button>
+                    <button onclick="goToClientPage('stores')" class="bg-black hover:bg-slate-800 text-amber-400 border border-amber-500/40 px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 shrink-0">
+                        <span>رجوع للمحلات</span> <i class="fa-solid fa-arrow-left"></i>
+                    </button>
                 </div>
-                <div id="storesCardsContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+
+                <!-- شبكة صور الوجبات والمنتجات -->
+                <div id="storeMenuItemsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3.5"></div>
+
+                <!-- شريط سفلي للانتقال لصفحة إتمام الطلب -->
+                <div class="bg-slate-900 p-4 rounded-2xl border-2 border-amber-500 flex flex-wrap justify-between items-center gap-3 shadow-2xl sticky bottom-3 z-30">
+                    <div>
+                        <span class="text-[11px] text-slate-400 font-bold block">الخطوة 2 من 3 • مراجعة اختياراتك:</span>
+                        <span id="menuCartSummaryText" class="text-xs sm:text-sm font-black text-emerald-400">اضغط على أي وجبة لإضافتها أو اضغط التالي</span>
+                    </div>
+                    <button onclick="proceedFromMenuToCheckout()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black px-6 py-3 rounded-xl text-xs sm:text-sm shadow-lg transition flex items-center gap-2">
+                        <span>التالي: صفحة عمل الطلب</span> <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- الصفحة 4: صفحة عمل الطلب وتحديد الـ GPS وحساب السعر               -->
+            <!-- ================================================================= -->
+            <div id="client-page-checkout" class="hidden page-fade space-y-5">
+                <!-- شريط علوي للرجوع -->
+                <div class="bg-slate-900/95 border border-emerald-500/50 rounded-2xl p-4 flex justify-between items-center shadow-lg">
+                    <div>
+                        <span class="text-[10px] text-emerald-400 font-black block">الخطوة الأخيرة • تحديد العنوان بالـ GPS</span>
+                        <h3 id="orderFormMainHeading" class="text-sm sm:text-base font-black text-amber-400 mt-0.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-emerald-400"></i> <span>إتمام الطلب</span>
+                        </h3>
+                    </div>
+                    <button onclick="goBackFromCheckoutPage()" class="bg-black hover:bg-slate-800 text-amber-400 border border-amber-500/40 px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 shrink-0">
+                        <span>رجوع للخطوة السابقة</span> <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+
+                <!-- استمارة الطلب في صفحة مستقلة نظيفة -->
+                <div class="bg-slate-900/95 rounded-3xl p-5 sm:p-6 border border-slate-800 shadow-2xl">
+                    <form id="clientOrderForm" onsubmit="createClientOrder(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <label id="lblRadioMoto" class="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-amber-500 bg-black cursor-pointer">
+                                <input type="radio" name="ordVehicleType" value="موتوسيكل" checked onchange="recalcClientZonePrice()" class="w-4 h-4 accent-amber-500">
+                                <span class="text-xs font-black text-amber-400">🛵 موتوسيكل سريع</span>
+                            </label>
+                            <label id="lblRadioTri" class="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-slate-700 bg-black cursor-pointer">
+                                <input type="radio" name="ordVehicleType" value="تريسيكل" onchange="recalcClientZonePrice()" class="w-4 h-4 accent-indigo-500">
+                                <span class="text-xs font-black text-indigo-300">🛺 تريسيكل بضائع</span>
+                            </label>
+                        </div>
+
+                        <!-- 1. مِـن (مكان الاستلام + GPS) -->
+                        <div class="bg-emerald-950/30 p-4 rounded-2xl border border-emerald-500/60 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-emerald-500 text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-lg">1. مِـن (مكان الاستلام)</span>
+                                <button type="button" onclick="captureClientGPS('from')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black px-2.5 py-1 rounded-lg shadow flex items-center gap-1">
+                                    📍 حدد (مِـن) بالـ GPS
+                                </button>
+                            </div>
+                            <select id="ordFromZone" onchange="recalcClientZonePrice()" class="w-full p-2.5 border border-emerald-500/50 rounded-xl text-xs font-bold bg-black text-white outline-none"></select>
+                            <input type="text" id="ordFromTextDetail" required onkeyup="recalcClientZonePrice()" placeholder="✍️ اسم المحل / المطعم / الصيدلية..." class="w-full p-2.5 border border-emerald-500/40 rounded-xl text-xs font-semibold bg-black text-white outline-none">
+                            <div id="fromGpsFeedback" class="text-[11px] text-emerald-400 font-black"></div>
+                        </div>
+
+                        <!-- 2. إلـى (مكان التسليم + GPS لتحديد السعر أوتوماتيكياً) -->
+                        <div class="bg-amber-950/30 p-4 rounded-2xl border border-amber-500/60 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-lg">2. إلـى (عنوانك بالتفصيل)</span>
+                                <button type="button" onclick="captureClientGPS('to')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-lg shadow flex items-center gap-1">
+                                    📍 حدد موقعي في (إلـى) بالـ GPS
+                                </button>
+                            </div>
+                            <select id="ordToZone" onchange="recalcClientZonePrice()" class="w-full p-2.5 border border-amber-500/50 rounded-xl text-xs font-bold bg-black text-white outline-none"></select>
+                            <input type="text" id="ordToTextDetail" required onkeyup="recalcClientZonePrice()" placeholder="✍️ المجاورة / رقم العمارة / الشارع / المصنع..." class="w-full p-2.5 border border-amber-500/40 rounded-xl text-xs font-semibold bg-black text-white outline-none">
+                            <div id="toGpsFeedback" class="text-[11px] text-amber-400 font-black"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">الوجبات / الطلبات المراد توصيلها: *</label>
+                            <input type="text" id="ordDescription" required placeholder="اكتب طلبك أو سيُملأ تلقائياً من المنيو..." class="w-full p-3 bg-black border border-slate-700 text-white rounded-xl text-xs font-bold outline-none focus:border-amber-500">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" id="ordClientName" required placeholder="اسمك (مثال: أ. حسن) *" class="w-full p-3 bg-black border border-slate-700 text-white rounded-xl text-xs font-bold outline-none">
+                            <input type="tel" id="ordClientPhone" required placeholder="رقم موبايلك *" dir="ltr" class="w-full p-3 bg-black border border-slate-700 text-white rounded-xl text-xs font-bold outline-none text-left">
+                        </div>
+
+                        <div class="bg-black text-white p-4 rounded-2xl border-2 border-amber-500 flex justify-between items-center">
+                            <div>
+                                <span class="text-[11px] text-slate-400 font-bold block">تكلفة التوصيل الثابتة بالـ GPS:</span>
+                                <span id="autoTierBadge" class="inline-block mt-1 text-xs bg-amber-500 text-slate-950 font-black px-3 py-0.5 rounded-full">مسافة قريبة</span>
+                                <p id="autoRouteExplanation" class="text-[11px] text-slate-300 mt-1"></p>
+                            </div>
+                            <div class="text-left shrink-0">
+                                <span id="autoCalculatedFee" class="text-3xl font-black text-amber-400">30</span>
+                                <span class="text-xs text-slate-300 block font-bold">جنيه توصيل</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-slate-950 font-black py-4 rounded-2xl text-sm sm:text-base shadow-xl transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> <span>اعتمد الطلب الآن 🚀</span>
+                        </button>
+                    </form>
+                </div>
             </div>
 
         </div>
@@ -588,7 +706,7 @@
                 </div>
             </div>
 
-            <!-- 1. إضافة قسم رئيسي جديد (مثل: الحلويات، المخبوزات، العصائر، المكتبات...) ينزل بأيقونته فوراً -->
+            <!-- 1. إضافة قسم رئيسي جديد -->
             <div class="bg-slate-900 rounded-2xl shadow-2xl p-5 border-2 border-pink-500/80 space-y-4">
                 <div class="border-b border-slate-800 pb-2">
                     <span class="bg-pink-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full">✨ محرك الأقسام الديناميكية</span>
@@ -624,11 +742,11 @@
                 <div id="adminCustomCategoriesChips" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <!-- 2. إدارة المحلات والمطاعم والحلويات + رقم واتساب المحل + مراسلة المحلات بالعروض -->
+            <!-- 2. إدارة المحلات والمطاعم والحلويات + رقم واتساب المحل -->
             <div class="bg-slate-900 rounded-2xl shadow-2xl p-5 border-2 border-orange-500/80 space-y-4">
                 <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 pb-2">
                     <h3 class="text-base font-black text-orange-400">
-                        🏪 2. إضافة محل / مطعم / حلواني / صيدلية (مع رقم واتساب المحل لاستقبال الأوردر والكود)
+                        🏪 2. إضافة محل / مطعم / حلواني / صيدلية (مع رقم واتساب المحل)
                     </h3>
                 </div>
 
@@ -646,7 +764,7 @@
                         <select id="admStoreZone" class="w-full p-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-bold"></select>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-black text-green-400 mb-1">واتساب المحل (للأوردرات):</label>
+                        <label class="block text-[11px] font-black text-green-400 mb-1">واتساب المحل:</label>
                         <input type="tel" id="admStoreWhatsapp" placeholder="010xxxxxxxx" dir="ltr" class="w-full p-2 rounded-xl bg-slate-900 border border-green-500/50 text-emerald-300 text-xs font-black text-left">
                     </div>
                     <div>
@@ -667,7 +785,6 @@
                     </div>
                 </div>
 
-                <!-- مركز مراسلة المحلات بخصوص العروض والتحديثات الدورية -->
                 <div class="bg-black p-3.5 rounded-2xl border border-emerald-500/40 space-y-2.5">
                     <div class="flex flex-wrap justify-between items-center gap-2">
                         <span class="text-xs font-black text-emerald-400">📢 إرسال رسالة عروض أو تنبيه لأصحاب المحلات المسجلين عبر واتساب:</span>
@@ -677,7 +794,7 @@
                 </div>
             </div>
 
-            <!-- 3. إدارة منيو المحلات والمطاعم والحلويات بالصور والأسعار -->
+            <!-- 3. إدارة منيو المحلات بالصور والأسعار -->
             <div class="bg-slate-900 rounded-2xl shadow-2xl p-5 border-2 border-amber-400 space-y-4">
                 <div class="border-b border-slate-800 pb-2">
                     <span class="bg-amber-400 text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-full">📸 منيو المنتجات والوجبات بالصور</span>
@@ -717,7 +834,7 @@
                 <div id="adminSelectedStoreMenuItems" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2.5"></div>
             </div>
 
-            <!-- 4. روبوت نقاط الضعف (Weak Points) على واتساب -->
+            <!-- 4. روبوت نقاط الضعف (Weak Points) -->
             <div class="bg-gradient-to-l from-slate-900 via-indigo-950 to-black text-white rounded-2xl shadow-2xl p-5 border border-indigo-400/60 space-y-3">
                 <div class="flex flex-wrap justify-between items-center gap-2">
                     <h3 class="text-sm sm:text-base font-black text-amber-400">🤖 روبوت الـ Weak Points ومقترحات التحسين</h3>
@@ -845,7 +962,7 @@
 
     </main>
 
-    <!-- الفوتر النظيف تماماً (بدون أي إشارة لبوابة الإدارة السرية) -->
+    <!-- الفوتر النظيف -->
     <footer class="max-w-5xl mx-auto px-4 py-5 text-center text-xs text-slate-500 flex justify-between items-center border-t border-slate-900 mt-6 w-full">
         <div>
             <b class="text-amber-400">ثانية سيكل</b> • توصيل مدينة السادات
@@ -861,113 +978,10 @@
     </footer>
 
     <!-- ========================================================================= -->
-    <!-- النوافذ المنبثقة الذكية (تظهر في منتصف الشاشة عند الضغط على الأيقونات)      -->
+    <!-- النوافذ المساعدة المنبثقة                                                  -->
     <!-- ========================================================================= -->
 
-    <!-- 1. نافذة منيو المحل / المطعم / الحلويات بالصور والأسعار -->
-    <div id="storeMenuModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-slate-900 text-white rounded-3xl max-w-2xl w-full p-5 shadow-2xl border-2 border-amber-500 space-y-4 my-auto">
-            <div class="flex justify-between items-start border-b border-slate-800 pb-3">
-                <div>
-                    <span id="menuModalZoneBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-black px-2.5 py-0.5 rounded-full"></span>
-                    <h3 id="menuModalStoreTitle" class="text-base sm:text-lg font-black text-amber-400 mt-1"></h3>
-                    <p id="menuModalStoreSpec" class="text-xs text-slate-400 font-bold"></p>
-                </div>
-                <button onclick="closeStoreMenuModal()" class="text-slate-400 hover:text-white text-2xl font-black px-2">&times;</button>
-            </div>
-
-            <div id="storeMenuItemsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[52vh] overflow-y-auto pr-1"></div>
-
-            <div class="bg-black p-3.5 rounded-2xl border border-amber-500/50 flex flex-wrap justify-between items-center gap-3">
-                <div>
-                    <span class="text-[11px] text-slate-400 font-bold block">المنتجات المختارة من المنيو:</span>
-                    <span id="menuCartSummaryText" class="text-xs sm:text-sm font-black text-emerald-400">اضغط على أي منتج لإضافته أو اطلب مباشرة</span>
-                </div>
-                <button onclick="proceedFromMenuToCheckout()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs sm:text-sm shadow-lg transition">
-                    إكمال عنوان التوصيل 🚀
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. صندوق إتمام التوصيل (يظهر فقط بعد اختيار أيقونة أو اختيار من المنيو) -->
-    <div id="deliveryCheckoutModal" class="fixed inset-0 bg-black/95 z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
-        <div class="bg-slate-900 text-white rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border-2 border-amber-500 space-y-4 my-auto">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h3 id="orderFormMainHeading" class="text-base sm:text-lg font-black text-amber-400 flex items-center gap-2">
-                    <i class="fa-solid fa-location-dot text-emerald-400"></i> <span>تأكيد عنوان التوصيل</span>
-                </h3>
-                <button onclick="closeDeliveryCheckoutModal()" class="text-slate-400 hover:text-white text-2xl font-black px-2">&times;</button>
-            </div>
-
-            <form id="clientOrderForm" onsubmit="createClientOrder(event)" class="space-y-3.5">
-                <div class="grid grid-cols-2 gap-2.5">
-                    <label id="lblRadioMoto" class="flex items-center justify-center gap-2 p-2.5 rounded-2xl border-2 border-amber-500 bg-black cursor-pointer">
-                        <input type="radio" name="ordVehicleType" value="موتوسيكل" checked onchange="recalcClientZonePrice()" class="w-4 h-4 accent-amber-500">
-                        <span class="text-xs font-black text-amber-400">🛵 موتوسيكل سريع</span>
-                    </label>
-                    <label id="lblRadioTri" class="flex items-center justify-center gap-2 p-2.5 rounded-2xl border-2 border-slate-700 bg-black cursor-pointer">
-                        <input type="radio" name="ordVehicleType" value="تريسيكل" onchange="recalcClientZonePrice()" class="w-4 h-4 accent-indigo-500">
-                        <span class="text-xs font-black text-indigo-300">🛺 تريسيكل بضائع</span>
-                    </label>
-                </div>
-
-                <!-- 1. مِـن (مكان الاستلام + GPS) -->
-                <div class="bg-emerald-950/30 p-3.5 rounded-2xl border border-emerald-500/60 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="bg-emerald-500 text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-lg">1. مِـن (مكان الاستلام)</span>
-                        <button type="button" onclick="captureClientGPS('from')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black px-2.5 py-1 rounded-lg shadow flex items-center gap-1">
-                            📍 حدد (مِـن) بالـ GPS
-                        </button>
-                    </div>
-                    <select id="ordFromZone" onchange="recalcClientZonePrice()" class="w-full p-2 border border-emerald-500/50 rounded-xl text-xs font-bold bg-black text-white outline-none"></select>
-                    <input type="text" id="ordFromTextDetail" required onkeyup="recalcClientZonePrice()" placeholder="✍️ اسم المحل / المطعم / الصيدلية..." class="w-full p-2.5 border border-emerald-500/40 rounded-xl text-xs font-semibold bg-black text-white outline-none">
-                    <div id="fromGpsFeedback" class="text-[10px] text-emerald-400 font-black"></div>
-                </div>
-
-                <!-- 2. إلـى (مكان التسليم + GPS لتحديد السعر أوتوماتيكياً) -->
-                <div class="bg-amber-950/30 p-3.5 rounded-2xl border border-amber-500/60 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="bg-amber-500 text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-lg">2. إلـى (مكان التسليم)</span>
-                        <button type="button" onclick="captureClientGPS('to')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-black px-2.5 py-1 rounded-lg shadow flex items-center gap-1">
-                            📍 حدد موقعي في (إلـى) بالـ GPS
-                        </button>
-                    </div>
-                    <select id="ordToZone" onchange="recalcClientZonePrice()" class="w-full p-2 border border-amber-500/50 rounded-xl text-xs font-bold bg-black text-white outline-none"></select>
-                    <input type="text" id="ordToTextDetail" required onkeyup="recalcClientZonePrice()" placeholder="✍️ عنوانك بالتفصيل: المجاورة / رقم العمارة / المصنع..." class="w-full p-2.5 border border-amber-500/40 rounded-xl text-xs font-semibold bg-black text-white outline-none">
-                    <div id="toGpsFeedback" class="text-[10px] text-amber-400 font-black"></div>
-                </div>
-
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-300 mb-1">تفاصيل الطلب / المشتريات: *</label>
-                    <input type="text" id="ordDescription" required placeholder="اكتب طلبك أو سيُملأ تلقائياً من المنيو..." class="w-full p-2.5 bg-black border border-slate-700 text-white rounded-xl text-xs font-bold outline-none focus:border-amber-500">
-                </div>
-
-                <div class="grid grid-cols-2 gap-2.5">
-                    <input type="text" id="ordClientName" required placeholder="اسمك (مثال: أ. حسن) *" class="w-full p-2.5 bg-black border border-slate-700 text-white rounded-xl text-xs font-bold outline-none">
-                    <input type="tel" id="ordClientPhone" required placeholder="رقم موبايلك *" dir="ltr" class="w-full p-2.5 bg-black border border-slate-700 text-white rounded-xl text-xs font-bold outline-none text-left">
-                </div>
-
-                <div class="bg-black text-white p-3.5 rounded-2xl border-2 border-amber-500 flex justify-between items-center">
-                    <div>
-                        <span class="text-[10px] text-slate-400 font-bold block">تكلفة التوصيل الثابتة بالـ GPS:</span>
-                        <span id="autoTierBadge" class="inline-block mt-0.5 text-[11px] bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded-full">مسافة قريبة</span>
-                        <p id="autoRouteExplanation" class="text-[10px] text-slate-300 mt-0.5"></p>
-                    </div>
-                    <div class="text-left shrink-0">
-                        <span id="autoCalculatedFee" class="text-2xl font-black text-amber-400">30</span>
-                        <span class="text-[10px] text-slate-300 block font-bold">جنيه توصيل</span>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-slate-950 font-black py-3.5 rounded-2xl text-sm shadow-xl transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-paper-plane"></i> <span>اعتمد الطلب وأصدر كود المحل والطيار 🚀</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 3. نافذة "ابحث عن طيار قريب" -->
+    <!-- نافذة "ابحث عن طيار قريب" -->
     <div id="nearbyCaptainModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
         <div class="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-emerald-500 space-y-4 text-center">
             <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-3xl mx-auto radar-pulse">
@@ -985,7 +999,7 @@
         </div>
     </div>
 
-    <!-- 4. نافذة "الطلبات الحالية وأكواد المحل والتسليم" -->
+    <!-- نافذة "الطلبات الحالية وأكواد المحل والتسليم" -->
     <div id="clientOrdersModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
         <div class="bg-slate-900 text-white rounded-3xl max-w-lg w-full p-5 shadow-2xl border-2 border-amber-500 space-y-4">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -997,7 +1011,7 @@
         </div>
     </div>
 
-    <!-- 5. نافذة "التقييم وآراء العملاء" -->
+    <!-- نافذة "التقييم وآراء العملاء" -->
     <div id="reviewsAndRateModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4 overflow-y-auto">
         <div class="bg-slate-900 text-white rounded-3xl max-w-lg w-full p-5 shadow-2xl border-2 border-purple-500 space-y-4 my-auto">
             <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
@@ -1246,11 +1260,11 @@
 
         function copyOfficialSiteUrl() {
             navigator.clipboard.writeText(OFFICIAL_APP_URL);
-            showToast(`✅ تم نسخ رابط التطبيق (${OFFICIAL_APP_URL})!`);
+            showToast(`✅ تم نسخ رابط التطبيق!`);
         }
 
         // =========================================================================
-        // 0.5 نظام الإشعارات والتنبيهات في منتصف الشاشة تماماً (Center Screen Popups)
+        // 0.5 نظام الإشعار الذاتي في منتصف الشاشة (يظهر ثانيتين ويختفي لوحده)
         // =========================================================================
         function playNotificationSound() {
             try {
@@ -1260,62 +1274,49 @@
                 osc.type = "sine";
                 osc.frequency.setValueAtTime(880, ctx.currentTime);
                 osc.frequency.setValueAtTime(1174, ctx.currentTime + 0.14);
-                gain.gain.setValueAtTime(0.25, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.22, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start();
-                osc.stop(ctx.currentTime + 0.5);
+                osc.stop(ctx.currentTime + 0.45);
             } catch (e) {}
         }
 
-        function showCenterScreenAlert(title, bodyHtml, badgeText = "إشعار ثانية سيكل 🚀", iconEmoji = "🚀", extraActionsHtml = "") {
-            document.getElementById('centerAlertIconBox').innerText = iconEmoji;
-            document.getElementById('centerAlertBadge').innerText = badgeText;
-            document.getElementById('centerAlertTitle').innerText = title;
-            document.getElementById('centerAlertBody').innerHTML = bodyHtml;
+        function showToast(titleText, subText = "", iconEmoji = "✅", durationMs = 2000) {
+            const modal = document.getElementById('autoCenterToastModal');
+            document.getElementById('autoToastIcon').innerText = iconEmoji;
+            document.getElementById('autoToastTitle').innerText = titleText;
+            document.getElementById('autoToastSub').innerHTML = subText;
 
-            const actionsBox = document.getElementById('centerAlertActions');
-            actionsBox.innerHTML = extraActionsHtml + `
-                <button onclick="closeCenterScreenAlert()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-4 rounded-2xl text-xs sm:text-sm shadow-lg transition">
-                    تمام، إغلاق 👍
-                </button>
-            `;
-
-            const modal = document.getElementById('centerScreenAlertModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             playNotificationSound();
-            if (navigator.vibrate) navigator.vibrate([250, 120, 250]);
-        }
 
-        function closeCenterScreenAlert() {
-            const modal = document.getElementById('centerScreenAlertModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function showToast(msg) {
-            showCenterScreenAlert(msg, "تم تنفيذ الإجراء بنجاح على منصة ثانية سيكل.", "تنبيه فوري ⚡", "✅");
+            clearTimeout(window._autoCenterToastTimer);
+            window._autoCenterToastTimer = setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, durationMs);
         }
 
         function requestMobileNotificationPermission() {
             if (!("Notification" in window)) {
-                showCenterScreenAlert("🔔 جرس الإشعارات مفعل!", "سيظهر لك تنبيه صوتي في منتصف الشاشة مع كل طلب جديد.", "إشعارات الفون", "🔔");
+                showToast("🔔 جرس الإشعارات مفعل!", "سيظهر لك تنبيه صوتي مع كل طلب جديد", "🔔");
                 return;
             }
             Notification.requestPermission().then(() => {
-                showCenterScreenAlert("🔔 تم تفعيل إشعارات الفون بنجاح!", "ستصلك تنبيهات الأوردرات الجديدة بالصوت والاهتزاز في منتصف الشاشة.", "إشعارات الفون", "🔔");
+                showToast("🔔 تم تفعيل إشعارات الفون!", "ستصلك تنبيهات الأوردرات بالصوت والاهتزاز", "🔔");
             });
         }
 
         // =========================================================================
-        // 1. قاعدة البيانات الشاملة (مع الأقسام الديناميكية وكود المحل #SC-XXX)
+        // 1. قاعدة البيانات الشاملة
         // =========================================================================
         /*DEFAULT_STATE_START*/
         const defaultState = {
             settings: {
-                configVersion: 9501,
+                configVersion: 9801,
                 googleSheetWebAppUrl: "https://script.google.com/macros/s/AKfycbyAPr99vxfw-_oXDacdot2tz5dozKl6Rz1Dxz48JDExoB_LDHBAN-3rBxSfxjl0Ipc/exec",
                 tier1Price: 30,
                 tier2Price: 40,
@@ -1583,11 +1584,11 @@
         };
         /*DEFAULT_STATE_END*/
 
-        let savedLocal = JSON.parse(localStorage.getItem('sanya_cycle_v17_cosmic') || "null");
+        let savedLocal = JSON.parse(localStorage.getItem('sanya_cycle_v18_pages') || "null");
         let state;
         if (!savedLocal || (defaultState.settings.configVersion > (savedLocal.settings?.configVersion || 0))) {
             state = JSON.parse(JSON.stringify(defaultState));
-            localStorage.setItem('sanya_cycle_v17_cosmic', JSON.stringify(state));
+            localStorage.setItem('sanya_cycle_v18_pages', JSON.stringify(state));
         } else {
             state = savedLocal;
             if (!state.sadatZones) state.sadatZones = JSON.parse(JSON.stringify(defaultState.sadatZones));
@@ -1604,9 +1605,30 @@
         let pendingOrderForClearance = null;
         let activeMenuStore = null;
         let activeMenuCart = [];
+        let previousPageBeforeCheckout = 'home';
         let tempUploadedMenuImgBase64 = null;
         let logoClickCount = 0;
         let logoClickTimer = null;
+
+        // =========================================================================
+        // 1.2 نظام التنقل بين الصفحات الـ 4 المستقلة للعميل (Multi-Page Router)
+        // =========================================================================
+        function goToClientPage(pageName) {
+            ['home', 'stores', 'menu', 'checkout'].forEach(p => {
+                const el = document.getElementById('client-page-' + p);
+                if (!el) return;
+                if (p === pageName) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goBackFromCheckoutPage() {
+            goToClientPage(previousPageBeforeCheckout || 'home');
+        }
 
         // =========================================================================
         // 1.5 محرك المزامنة السحابية اللحظية مع Google Sheets
@@ -1650,25 +1672,21 @@
                     if (!state.customCategories) state.customCategories = defaultState.customCategories;
                     state.adminUnlocked = wasAdminUnlocked;
                     state.activeCaptainId = currentActiveCap;
-                    localStorage.setItem('sanya_cycle_v17_cosmic', JSON.stringify(state));
+                    localStorage.setItem('sanya_cycle_v18_pages', JSON.stringify(state));
 
                     populateZonesDropdowns();
                     renderAll();
 
                     if (newTopOrder && newTopOrder.id !== prevTopOrderId && newTopOrder.id !== lastKnownOrderTopId && newTopOrder.status === "متاح") {
                         lastKnownOrderTopId = newTopOrder.id;
-                        showCenterScreenAlert(
-                            `🔔 طلب جديد (${newTopOrder.vehicleType}) — السعر: ${newTopOrder.fee} ج!`,
-                            `<div class="space-y-1">
-                                <div class="text-amber-300 font-black">كود استلام المحل: #${newTopOrder.storePickupCode || newTopOrder.id}</div>
-                                <div>باسم العميل: <b>${newTopOrder.client}</b> (${newTopOrder.to})</div>
-                                <div>مِـن: (${newTopOrder.from} - ${newTopOrder.fromDetail})</div>
-                            </div>`,
-                            "إشعار طلب جديد على الرادار 🚀",
-                            "🛵"
+                        showToast(
+                            `🔔 طلب جديد (${newTopOrder.vehicleType}) — ${newTopOrder.fee} ج!`,
+                            `كود المحل: #${newTopOrder.storePickupCode || newTopOrder.id} • العميل: ${newTopOrder.client}`,
+                            "🛵",
+                            2400
                         );
                     }
-                    if (manualNotify) showToast("✅ تم التحديث الفوري من شيت جوجل!");
+                    if (manualNotify) showToast("✅ تم التحديث من شيت جوجل!");
                 }
             } catch (err) {}
         }
@@ -1679,11 +1697,11 @@
             localStorage.setItem('sanya_gsheet_url', urlInput);
             saveAdminSettings();
             pushStateToGoogleSheet();
-            showToast("🚀 تم ربط شيت جوجل ومزامنة كافة الأقسام والمنيو والأسعار لكل الهواتف!");
+            showToast("🚀 تم ربط شيت جوجل والمزامنة الفورية!");
         }
 
         // =========================================================================
-        // 2. محرك الأقسام الديناميكية (إضافة حلويات أو أي قسم جديد بأيقونته فوراً)
+        // 2. محرك الأقسام الديناميكية والانتقال لصفحة المحلات ثم المنيو ثم الطلب
         // =========================================================================
         const THEME_STYLES = {
             pink: { card: "from-pink-950/80 border-pink-500/60", iconBg: "from-pink-400 via-rose-500 to-fuchsia-600", text: "text-pink-300", border: "border-pink-500/70" },
@@ -1695,20 +1713,20 @@
 
         function getCategoryMetadata(catKey) {
             const base = {
-                grills: { title: "🥩 مطاعم المشويات", badge: "اختر المطعم لفتح المنيو بالصور", icon: "🥩", border: "border-red-500/70" },
-                seafood: { title: "🐟 مطاعم الأسماك", badge: "اختر المطعم لفتح المنيو بالصور", icon: "🐟", border: "border-sky-500/70" },
-                shami: { title: "🌯 المطاعم الشامية والشاورما", badge: "اختر المطعم لفتح المنيو بالصور", icon: "🌯", border: "border-amber-500/70" },
-                koshary: { title: "🍲 مطاعم الكشري والشعبي", badge: "اختر المطعم لفتح المنيو بالصور", icon: "🍲", border: "border-orange-500/70" },
-                pharmacy: { title: "💊 صيدليات مدينة السادات", badge: "اختر الصيدلية لطلب الأدوية", icon: "💊", border: "border-cyan-500/70" },
-                market: { title: "🛒 الهايبرات والخضار والفاكهة", badge: "اختر المكان لعرض المنتجات", icon: "🛒", border: "border-emerald-500/70" },
-                offers: { title: "🏷️ العروض والخصومات اليوم", badge: "اضغط لفتح المنيو والعرض", icon: "🏷️", border: "border-amber-400" }
+                grills: { title: "مطاعم المشويات", badge: "الخطوة 1 • اختر المطعم لفتح المنيو", icon: "🥩", border: "border-red-500/70" },
+                seafood: { title: "مطاعم الأسماك", badge: "الخطوة 1 • اختر المطعم لفتح المنيو", icon: "🐟", border: "border-sky-500/70" },
+                shami: { title: "المطاعم الشامية والشاورما", badge: "الخطوة 1 • اختر المطعم لفتح المنيو", icon: "🌯", border: "border-amber-500/70" },
+                koshary: { title: "مطاعم الكشري والشعبي", badge: "الخطوة 1 • اختر المطعم لفتح المنيو", icon: "🍲", border: "border-orange-500/70" },
+                pharmacy: { title: "صيدليات مدينة السادات", badge: "الخطوة 1 • اختر الصيدلية", icon: "💊", border: "border-cyan-500/70" },
+                market: { title: "الهايبرات والخضار والفاكهة", badge: "الخطوة 1 • اختر الهايبر أو المحل", icon: "🛒", border: "border-emerald-500/70" },
+                offers: { title: "العروض والخصومات اليوم", badge: "الخطوة 1 • اختر المحل صاحب العرض", icon: "🏷️", border: "border-amber-400" }
             };
             if (base[catKey]) return base[catKey];
 
             const custom = (state.customCategories || []).find(c => c.id === catKey);
             if (custom) {
                 const th = THEME_STYLES[custom.theme] || THEME_STYLES.pink;
-                return { title: `${custom.icon} ${custom.title}`, badge: "اختر المحل لفتح المنيو بالصور", icon: custom.icon, border: th.border };
+                return { title: custom.title, badge: "الخطوة 1 • اختر المحل لفتح المنيو", icon: custom.icon, border: th.border };
             }
             return base.grills;
         }
@@ -1730,40 +1748,33 @@
             }).join('');
 
             grid.innerHTML = `
-                <!-- 1. المطاعم -->
                 <div onclick="selectMainCategory('restaurants')" class="neuro-card cursor-pointer bg-gradient-to-b from-orange-950/80 via-slate-900 to-black border border-orange-500/60 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
                     <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-gradient-to-br from-orange-400 via-red-500 to-rose-600 flex items-center justify-center text-3xl icon-3d-badge">🍔</div>
                     <span class="text-xs font-black text-orange-300">المطاعم</span>
                 </div>
 
-                <!-- الأقسام المخصصة مثل الحلويات وغيرها -->
                 ${customCardsHtml}
 
-                <!-- الصيدليات -->
                 <div onclick="selectMainCategory('pharmacy')" class="neuro-card cursor-pointer bg-gradient-to-b from-cyan-950/80 via-slate-900 to-black border border-cyan-500/60 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
                     <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-gradient-to-br from-cyan-400 via-teal-500 to-emerald-600 flex items-center justify-center text-3xl icon-3d-badge">💊</div>
                     <span class="text-xs font-black text-cyan-300">صيدليات</span>
                 </div>
 
-                <!-- هايبرات وخضار -->
                 <div onclick="selectMainCategory('market')" class="neuro-card cursor-pointer bg-gradient-to-b from-emerald-950/80 via-slate-900 to-black border border-emerald-500/60 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
                     <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-gradient-to-br from-lime-400 via-emerald-500 to-green-600 flex items-center justify-center text-3xl icon-3d-badge">🛒</div>
                     <span class="text-xs font-black text-emerald-300">هايبرات وخضار</span>
                 </div>
 
-                <!-- توصيل موتوسيكل -->
-                <div onclick="openDeliveryCheckoutModal('موتوسيكل', 'توصيل سريع بالموتوسيكل 🛵')" class="neuro-card cursor-pointer bg-gradient-to-b from-amber-950/80 via-slate-900 to-black border border-amber-500/70 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
+                <div onclick="openDeliveryCheckoutPage('موتوسيكل', 'توصيل سريع بالموتوسيكل 🛵', '', '', '', 'home')" class="neuro-card cursor-pointer bg-gradient-to-b from-amber-950/80 via-slate-900 to-black border border-amber-500/70 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
                     <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-gradient-to-br from-yellow-300 via-amber-500 to-orange-500 flex items-center justify-center text-3xl icon-3d-badge">🛵</div>
                     <span class="text-xs font-black text-amber-300">توصيل موتوسيكل</span>
                 </div>
 
-                <!-- نقل تريسيكل -->
-                <div onclick="openDeliveryCheckoutModal('تريسيكل', 'نقل بضائع بالتريسيكل 🛺')" class="neuro-card cursor-pointer bg-gradient-to-b from-indigo-950/80 via-slate-900 to-black border border-indigo-500/70 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
+                <div onclick="openDeliveryCheckoutPage('تريسيكل', 'نقل بضائع بالتريسيكل 🛺', '', '', '', 'home')" class="neuro-card cursor-pointer bg-gradient-to-b from-indigo-950/80 via-slate-900 to-black border border-indigo-500/70 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
                     <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-gradient-to-br from-indigo-400 via-purple-500 to-violet-700 flex items-center justify-center text-3xl icon-3d-badge">🛺</div>
                     <span class="text-xs font-black text-indigo-300">نقل تريسيكل</span>
                 </div>
 
-                <!-- العروض -->
                 <div onclick="selectMainCategory('offers')" class="neuro-card offer-glow cursor-pointer bg-gradient-to-b from-rose-950/80 via-slate-900 to-black border-2 border-amber-400 rounded-3xl p-3.5 text-center flex flex-col items-center justify-center gap-2 shadow-lg">
                     <div class="w-14 h-14 sm:w-15 sm:h-15 rounded-2xl bg-gradient-to-br from-amber-300 via-rose-500 to-pink-600 flex items-center justify-center text-3xl icon-3d-badge">🏷️</div>
                     <span class="text-xs font-black text-amber-300">العروض 🔥</span>
@@ -1777,50 +1788,50 @@
             const theme = document.getElementById('admNewCatTheme').value;
 
             if (!title) {
-                showToast("⚠️ اكتب اسم القسم الجديد أولاً (مثل: حلويات ومخبوزات)!");
+                showToast("⚠️ اكتب اسم القسم الجديد أولاً!", "", "⚠️");
                 return;
             }
             const id = "cat_" + Date.now();
             state.customCategories.push({ id, title, icon, theme });
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             document.getElementById('admNewCatTitle').value = '';
             document.getElementById('admNewCatIcon').value = '';
             saveState();
-            showToast(`✅ تم إنشاء قسم (${icon} ${title}) وإضافته كأيقونة في الصفحة الرئيسية فوراً!`);
+            showToast(`✅ تم إنشاء قسم (${icon} ${title})!`);
         }
 
         function deleteCustomCategoryAdmin(catId) {
             state.customCategories = (state.customCategories || []).filter(c => c.id !== catId);
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             saveState();
         }
 
+        // الانتقال لصفحة المحلات (الصفحة 2) عند الضغط على أيقونة
         function selectMainCategory(catKey) {
             const subBox = document.getElementById('restaurantSubcategoriesBox');
             if (catKey === 'restaurants') {
                 subBox.classList.remove('hidden');
-                filterStoresByCategory('grills');
+                filterStoresByCategory('grills', true);
             } else {
                 subBox.classList.add('hidden');
-                filterStoresByCategory(catKey);
+                filterStoresByCategory(catKey, false);
             }
+            goToClientPage('stores');
         }
 
-        function closeCategoryBrowser() {
-            document.getElementById('restaurantSubcategoriesBox').classList.add('hidden');
-            document.getElementById('storesDisplayGridBox').classList.add('hidden');
-        }
+        function filterStoresByCategory(catKey, isRestaurantSub = false) {
+            const subBox = document.getElementById('restaurantSubcategoriesBox');
+            if (isRestaurantSub) subBox.classList.remove('hidden');
 
-        function filterStoresByCategory(catKey) {
-            const displayBox = document.getElementById('storesDisplayGridBox');
             const titleEl = document.getElementById('storesDisplayTitle');
             const badgeEl = document.getElementById('storesDisplayBadge');
+            const iconEl = document.getElementById('storesPageHeaderIcon');
             const container = document.getElementById('storesCardsContainer');
 
             const meta = getCategoryMetadata(catKey);
             titleEl.innerText = meta.title;
             badgeEl.innerText = meta.badge;
-            displayBox.classList.remove('hidden');
+            if (iconEl) iconEl.innerText = meta.icon;
 
             let list = catKey === 'offers'
                 ? (state.storesCatalog || []).filter(s => s.hasOffer)
@@ -1828,24 +1839,24 @@
 
             if (list.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-3 p-4 rounded-2xl bg-black border border-slate-800 text-center space-y-2">
-                        <p class="text-xs text-slate-400 font-bold">يمكنك طلب توصيل مباشر من أي محل في (${meta.title}) الآن!</p>
-                        <button onclick="openDeliveryCheckoutModal('موتوسيكل', '${meta.title}')" class="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">اطلب توصيل مباشر 👈</button>
+                    <div class="col-span-3 p-6 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-3">
+                        <p class="text-xs text-slate-300 font-bold">يمكنك طلب توصيل مباشر من أي مكان في (${meta.title}) الآن!</p>
+                        <button onclick="openDeliveryCheckoutPage('موتوسيكل', '${meta.title}', '', '', '', 'stores')" class="bg-amber-500 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs">الانتقال لصفحة عمل الطلب 👈</button>
                     </div>
                 `;
             } else {
                 container.innerHTML = list.map(st => `
-                    <div onclick="openStoreMenuModal('${st.id}')" class="neuro-card cursor-pointer bg-black hover:bg-slate-900 p-3.5 rounded-2xl border-2 ${st.hasOffer ? 'border-amber-400' : meta.border} flex flex-col justify-between gap-2 shadow-lg">
-                        <div class="flex items-center gap-2">
-                            <span class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-xl shrink-0">${meta.icon}</span>
+                    <div onclick="openStoreMenuPage('${st.id}')" class="neuro-card cursor-pointer bg-slate-900 hover:bg-slate-800 p-4 rounded-2xl border-2 ${st.hasOffer ? 'border-amber-400' : meta.border} flex flex-col justify-between gap-2.5 shadow-lg">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-11 h-11 rounded-xl bg-black border border-slate-700 flex items-center justify-center text-2xl shrink-0">${meta.icon}</span>
                             <div class="overflow-hidden">
                                 <h4 class="text-xs sm:text-sm font-black text-white truncate">${st.name}</h4>
                                 <span class="text-[10px] text-emerald-400 font-bold block truncate">📍 ${st.zone}</span>
                             </div>
                         </div>
-                        ${st.hasOffer && st.offerText ? `<div class="bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[10px] font-black px-2 py-1 rounded-lg truncate">🏷️ ${st.offerText}</div>` : `<p class="text-[10px] text-slate-400 font-semibold truncate">${st.spec || ''}</p>`}
-                        <span class="w-full bg-amber-500 text-slate-950 font-black py-1.5 rounded-xl text-[11px] text-center block shadow">
-                            📖 افتح المنيو واطلب (${(st.menu || []).length})
+                        ${st.hasOffer && st.offerText ? `<div class="bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[10px] font-black px-2.5 py-1 rounded-lg truncate">🏷️ ${st.offerText}</div>` : `<p class="text-[11px] text-slate-400 font-semibold truncate">${st.spec || ''}</p>`}
+                        <span class="w-full bg-amber-500 text-slate-950 font-black py-2 rounded-xl text-xs text-center block shadow">
+                            📖 اختر الوجبات من المنيو (${(st.menu || []).length}) 👈
                         </span>
                     </div>
                 `).join('');
@@ -1854,13 +1865,9 @@
 
         function handleQuickStoreSearch(query) {
             const q = (query || "").trim().toLowerCase();
-            const displayBox = document.getElementById('storesDisplayGridBox');
-            const container = document.getElementById('storesCardsContainer');
-            if (!q) {
-                displayBox.classList.add('hidden');
-                return;
-            }
-            displayBox.classList.remove('hidden');
+            if (!q) return;
+
+            document.getElementById('restaurantSubcategoriesBox').classList.add('hidden');
             document.getElementById('storesDisplayBadge').innerText = "نتائج البحث الفوري 🔍";
             document.getElementById('storesDisplayTitle').innerText = `نتائج البحث عن: "${query}"`;
 
@@ -1870,18 +1877,19 @@
                 (s.menu || []).some(m => m.name.toLowerCase().includes(q))
             );
 
+            const container = document.getElementById('storesCardsContainer');
             if (matches.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-3 p-4 rounded-2xl bg-black border border-amber-500/40 flex justify-between items-center gap-2">
+                    <div class="col-span-3 p-5 rounded-2xl bg-slate-900 border border-amber-500/40 flex justify-between items-center gap-2">
                         <span class="text-xs font-bold text-slate-200">اطلب "${query}" مباشرة الآن:</span>
-                        <button onclick="openDeliveryCheckoutModal('موتوسيكل', 'طلب: ${query.replace(/'/g, "")}', '', '${query.replace(/'/g, "")}')" class="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">إكمال العنوان 👈</button>
+                        <button onclick="openDeliveryCheckoutPage('موتوسيكل', 'طلب: ${query.replace(/'/g, "")}', '', '${query.replace(/'/g, "")}', '', 'home')" class="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">صفحة عمل الطلب 👈</button>
                     </div>
                 `;
             } else {
                 container.innerHTML = matches.map(st => {
                     const meta = getCategoryMetadata(st.category);
                     return `
-                        <div onclick="openStoreMenuModal('${st.id}')" class="neuro-card cursor-pointer bg-black p-3.5 rounded-2xl border-2 border-amber-500/60 flex flex-col justify-between gap-2">
+                        <div onclick="openStoreMenuPage('${st.id}')" class="neuro-card cursor-pointer bg-slate-900 p-4 rounded-2xl border-2 border-amber-500/60 flex flex-col justify-between gap-2">
                             <div class="font-black text-white text-xs sm:text-sm">${meta.icon} ${st.name}</div>
                             <div class="text-[10px] text-emerald-400 font-bold">📍 ${st.zone}</div>
                             <span class="w-full bg-amber-500 text-slate-950 font-black py-1.5 rounded-xl text-[11px] text-center block">افتح المنيو 👈</span>
@@ -1889,9 +1897,11 @@
                     `;
                 }).join('');
             }
+            goToClientPage('stores');
         }
 
-        function openStoreMenuModal(storeId) {
+        // الانتقال لصفحة منيو المطعم واختيار الوجبات (الصفحة 3)
+        function openStoreMenuPage(storeId) {
             const st = (state.storesCatalog || []).find(s => s.id === storeId);
             if (!st) return;
             activeMenuStore = st;
@@ -1903,15 +1913,7 @@
             updateMenuCartSummaryUI();
             renderStoreMenuGrid();
 
-            const modal = document.getElementById('storeMenuModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeStoreMenuModal() {
-            const modal = document.getElementById('storeMenuModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            goToClientPage('menu');
         }
 
         function renderStoreMenuGrid() {
@@ -1921,8 +1923,8 @@
 
             if (menuList.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-3 p-5 bg-black rounded-2xl border border-slate-800 text-center space-y-2">
-                        <p class="text-xs text-slate-300 font-bold">اضغط (إكمال عنوان التوصيل) بالأسفل لكتابة طلبك الخاص من (${activeMenuStore.name})!</p>
+                    <div class="col-span-3 p-6 bg-slate-900 rounded-2xl border border-slate-800 text-center space-y-2">
+                        <p class="text-xs text-slate-300 font-bold">اضغط على زر (التالي: صفحة عمل الطلب) بالأسفل لكتابة طلبك الخاص من (${activeMenuStore.name})!</p>
                     </div>
                 `;
                 return;
@@ -1932,16 +1934,16 @@
                 const countInCart = activeMenuCart.filter(x => x.id === item.id).length;
                 const imgSrc = item.img || "https://placehold.co/300x200/1e293b/f59e0b?text=Item";
                 return `
-                    <div onclick="toggleMenuItemInCart('${item.id}')" class="neuro-card cursor-pointer bg-black rounded-2xl border-2 ${countInCart > 0 ? 'border-emerald-400' : 'border-slate-800'} overflow-hidden flex flex-col justify-between shadow-lg">
-                        <div class="relative h-28 w-full bg-slate-950">
+                    <div onclick="toggleMenuItemInCart('${item.id}')" class="neuro-card cursor-pointer bg-slate-900 rounded-2xl border-2 ${countInCart > 0 ? 'border-emerald-400' : 'border-slate-800'} overflow-hidden flex flex-col justify-between shadow-lg">
+                        <div class="relative h-32 w-full bg-black">
                             <img src="${imgSrc}" alt="${item.name}" class="w-full h-full object-cover">
-                            ${item.price > 0 ? `<span class="absolute top-2 left-2 bg-black/90 text-amber-400 border border-amber-500/50 text-[11px] font-black px-2 py-0.5 rounded-lg">${item.price} ج</span>` : ''}
-                            ${countInCart > 0 ? `<span class="absolute top-2 right-2 bg-emerald-500 text-slate-950 text-xs font-black w-6 h-6 rounded-full flex items-center justify-center shadow">${countInCart}</span>` : ''}
+                            ${item.price > 0 ? `<span class="absolute top-2 left-2 bg-black/90 text-amber-400 border border-amber-500/50 text-[11px] font-black px-2.5 py-0.5 rounded-lg">${item.price} ج</span>` : ''}
+                            ${countInCart > 0 ? `<span class="absolute top-2 right-2 bg-emerald-500 text-slate-950 text-xs font-black w-7 h-7 rounded-full flex items-center justify-center shadow">${countInCart}</span>` : ''}
                         </div>
-                        <div class="p-2.5 space-y-2">
-                            <h4 class="text-xs font-black text-white leading-snug line-clamp-2">${item.name}</h4>
-                            <button type="button" class="w-full ${countInCart > 0 ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-amber-400'} font-black py-1.5 rounded-xl text-[11px] transition">
-                                ${countInCart > 0 ? `✓ تمت الإضافة (${countInCart}) — اضغط للزيادة` : '+ أضف للطلب'}
+                        <div class="p-3 space-y-2">
+                            <h4 class="text-xs sm:text-sm font-black text-white leading-snug line-clamp-2">${item.name}</h4>
+                            <button type="button" class="w-full ${countInCart > 0 ? 'bg-emerald-500 text-slate-950' : 'bg-black text-amber-400 border border-amber-500/40'} font-black py-2 rounded-xl text-xs transition">
+                                ${countInCart > 0 ? `✓ تم الاختيار (${countInCart}) — اضغط للزيادة` : '+ اختر هذه الوجبة'}
                             </button>
                         </div>
                     </div>
@@ -1956,22 +1958,23 @@
             activeMenuCart.push(found);
             updateMenuCartSummaryUI();
             renderStoreMenuGrid();
+            showToast(`تم اختيار: ${found.name}`, `إجمالي المختار الآن: ${activeMenuCart.length}`, "🍽️", 1200);
         }
 
         function updateMenuCartSummaryUI() {
             const el = document.getElementById('menuCartSummaryText');
             if (activeMenuCart.length === 0) {
-                el.innerText = "اضغط على أي صورة لإضافتها أو اضغط إكمال لكتابة طلبك";
+                el.innerText = "اضغط على أي وجبة لاختيارها ثم اضغط التالي";
                 return;
             }
             const totalItemsPrice = activeMenuCart.reduce((s, i) => s + Number(i.price || 0), 0);
-            el.innerText = `تم اختيار (${activeMenuCart.length}) منتج — إجمالي المنيو: ${totalItemsPrice} ج`;
+            el.innerText = `تم اختيار (${activeMenuCart.length}) وجبة — إجمالي المنيو: ${totalItemsPrice} ج`;
         }
 
+        // الانتقال من صفحة المنيو (3) إلى صفحة عمل الطلب (4)
         function proceedFromMenuToCheckout() {
             if (!activeMenuStore) return;
             const st = activeMenuStore;
-            closeStoreMenuModal();
 
             const grouped = {};
             activeMenuCart.forEach(i => {
@@ -1985,10 +1988,12 @@
                 : `طلب من (${st.name}): `;
 
             tempSelectedStoreWhatsapp = st.whatsapp || "";
-            openDeliveryCheckoutModal('موتوسيكل', `طلب من: ${st.name}`, st.zone, `${st.name}`, descText);
+            openDeliveryCheckoutPage('موتوسيكل', `إتمام الطلب من: ${st.name}`, st.zone, `${st.name}`, descText, 'menu');
         }
 
-        function openDeliveryCheckoutModal(vehicleType = 'موتوسيكل', headingText = 'تأكيد عنوان التوصيل', prefillFromZone = '', prefillFromDetail = '', prefillDesc = '') {
+        // فتح صفحة عمل الطلب المستقلة (الصفحة 4)
+        function openDeliveryCheckoutPage(vehicleType = 'موتوسيكل', headingText = 'إتمام الطلب', prefillFromZone = '', prefillFromDetail = '', prefillDesc = '', fromPage = 'home') {
+            previousPageBeforeCheckout = fromPage;
             const radios = document.querySelectorAll('input[name="ordVehicleType"]');
             radios.forEach(r => { r.checked = (r.value === vehicleType); });
 
@@ -2000,23 +2005,15 @@
                 tempFromGPS = { lat: zCoords.lat, lon: zCoords.lon };
                 document.getElementById('fromGpsFeedback').innerText = `✅ تم تحديد موقع الاستلام (${prefillFromZone}) بالـ GPS تلقائياً!`;
             }
-            if (prefillFromDetail) {
+            if (prefillFromDetail !== undefined) {
                 document.getElementById('ordFromTextDetail').value = prefillFromDetail;
             }
-            if (prefillDesc) {
+            if (prefillDesc !== undefined) {
                 document.getElementById('ordDescription').value = prefillDesc;
             }
 
             recalcClientZonePrice();
-            const modal = document.getElementById('deliveryCheckoutModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeDeliveryCheckoutModal() {
-            const modal = document.getElementById('deliveryCheckoutModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            goToClientPage('checkout');
         }
 
         function openNearbyCaptainModal() {
@@ -2057,7 +2054,6 @@
             m.classList.remove('flex');
         }
 
-        // إرسال الطلب أو العروض لواتساب المحل مع كود المطابقة (#SC-XXX)
         function sendOrderToStoreWhatsapp(orderId) {
             const o = state.orders.find(x => x.id === orderId);
             if (!o) return;
@@ -2119,7 +2115,7 @@
 
             const st = (state.storesCatalog || []).find(s => s.id === storeId);
             if (!st || !itemName) {
-                showToast("⚠️ اختر المحل واكتب اسم المنتج أولاً!");
+                showToast("⚠️ اختر المحل واكتب اسم المنتج أولاً!", "", "⚠️");
                 return;
             }
             if (!st.menu) st.menu = [];
@@ -2136,17 +2132,17 @@
             document.getElementById('admMenuItemPrice').value = '';
             document.getElementById('admMenuItemImgUrl').value = '';
 
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             saveState();
             renderAdminStoreMenuList();
-            showToast(`✅ تمت إضافة (${itemName}) بالصورة والسعر في منيو (${st.name})!`);
+            showToast(`✅ تمت إضافة (${itemName}) للمنيو!`);
         }
 
         function deleteAdminMenuItem(storeId, menuId) {
             const st = (state.storesCatalog || []).find(s => s.id === storeId);
             if (!st || !st.menu) return;
             st.menu = st.menu.filter(m => m.id !== menuId);
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             saveState();
             renderAdminStoreMenuList();
         }
@@ -2187,7 +2183,7 @@
             const offerText = document.getElementById('admStoreOfferText').value.trim();
 
             if (!name) {
-                showToast("⚠️ اكتب اسم المحل أو المطعم أو الحلواني أولاً!");
+                showToast("⚠️ اكتب اسم المحل أولاً!", "", "⚠️");
                 return;
             }
 
@@ -2203,7 +2199,7 @@
                 menu: []
             });
 
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             document.getElementById('admStoreName').value = '';
             document.getElementById('admStoreWhatsapp').value = '';
             document.getElementById('admStoreSpec').value = '';
@@ -2211,12 +2207,12 @@
             document.getElementById('admStoreOfferText').value = '';
 
             saveState();
-            showToast(`✅ تم إضافة (${name}) برقم واتسابه وتعميمه فوراً لدى جميع العملاء!`);
+            showToast(`✅ تم إضافة (${name}) بنجاح!`);
         }
 
         function deleteStoreItemAdmin(storeId) {
             state.storesCatalog = (state.storesCatalog || []).filter(s => s.id !== storeId);
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             saveState();
         }
 
@@ -2224,13 +2220,13 @@
         // 3. إدارة جلسة الجهاز والدخول التلقائي للطيار بعد 3 مرات
         // =========================================================================
         function getDeviceSession() {
-            const raw = localStorage.getItem('sanya_device_session_v17');
+            const raw = localStorage.getItem('sanya_device_session_v18');
             if (!raw) return { role: null, captainId: null, loginCount: 0, loggedInNow: false };
             try { return JSON.parse(raw); } catch (e) { return { role: null, captainId: null, loginCount: 0, loggedInNow: false }; }
         }
 
         function saveDeviceSession(sessionObj) {
-            localStorage.setItem('sanya_device_session_v17', JSON.stringify(sessionObj));
+            localStorage.setItem('sanya_device_session_v18', JSON.stringify(sessionObj));
             applyRoleSeparationUI();
         }
 
@@ -2261,9 +2257,9 @@
         }
 
         function resetDeviceRoleLock() {
-            localStorage.removeItem('sanya_device_session_v17');
+            localStorage.removeItem('sanya_device_session_v18');
             applyRoleSeparationUI();
-            showToast("✅ تم إظهار البوابتين معاً على جهازك!");
+            showToast("✅ تم إظهار البوابتين معاً!");
         }
 
         function handleCaptainLogin(e) {
@@ -2273,13 +2269,13 @@
 
             const foundCap = state.captains.find(c => c.phone === phoneInput);
             if (!foundCap) {
-                showToast("❌ رقم الهاتف غير مسجل في قائمة الطيارين المعتمدين!");
+                showToast("❌ رقم الهاتف غير مسجل كطيار!", "", "❌");
                 return;
             }
 
             const expectedPin = foundCap.fixedPin || computeSecretActivationCode(foundCap.phone);
             if (codeInput !== expectedPin && codeInput !== "2026") {
-                showToast("❌ كود التفعيل غير صحيح!");
+                showToast("❌ كود التفعيل غير صحيح!", "", "❌");
                 return;
             }
 
@@ -2297,12 +2293,7 @@
 
             saveState();
             openCaptainAuthenticatedView();
-
-            if (newCount >= 3) {
-                showToast(`🔓 مرحباً ${foundCap.name}! تم حفظ دخولك الدائم — سيفتح الرادار تلقائياً في كل مرة!`);
-            } else {
-                showToast(`✅ مرحباً يا ${foundCap.name}! (الدخول ${newCount} من 3 للحفظ التلقائي).`);
-            }
+            showToast(`✅ مرحباً يا ${foundCap.name}!`);
         }
 
         function openCaptainAuthenticatedView() {
@@ -2344,7 +2335,7 @@
         }
 
         function saveState() {
-            localStorage.setItem('sanya_cycle_v17_cosmic', JSON.stringify(state));
+            localStorage.setItem('sanya_cycle_v18_pages', JSON.stringify(state));
             renderAll();
             pushStateToGoogleSheet();
         }
@@ -2352,7 +2343,7 @@
         function copyPaymentBox(type) {
             const textToCopy = type === 'instapay' ? state.settings.instaPayAccount : state.settings.vodafoneCashNumber;
             navigator.clipboard.writeText(textToCopy);
-            showToast(`✅ تم نسخ (${textToCopy}) بنجاح!`);
+            showToast(`✅ تم نسخ (${textToCopy})!`);
         }
 
         function getActiveCaptain() {
@@ -2383,7 +2374,6 @@
             return digits.slice(-4).padStart(4, '1');
         }
 
-        // الدخول السري للمالك بـ 5 ضغطات على اللوجو العلوي فقط
         document.getElementById('secretLogoTrigger').addEventListener('click', () => {
             logoClickCount++;
             clearTimeout(logoClickTimer);
@@ -2422,9 +2412,9 @@
                 closeAdminPinModal();
                 switchTab('admin');
                 loadCaptainIntoAdminEditor(state.activeCaptainId);
-                showToast("🔓 تم فتح لوحة الإدارة السرية!");
+                showToast("🔓 تم فتح لوحة الإدارة!");
             } else {
-                showToast("❌ الرقم السري غير صحيح!");
+                showToast("❌ الرقم السري غير صحيح!", "", "❌");
             }
         }
 
@@ -2470,7 +2460,6 @@
                 ).join('');
             });
 
-            // تحديث قائمة الأقسام عند إضافة محل في لوحة الإدارة
             const storeCatSel = document.getElementById('admStoreCategory');
             if (storeCatSel) {
                 const prevCat = storeCatSel.value;
@@ -2495,24 +2484,21 @@
             const name = document.getElementById('newZoneNameInput').value.trim();
             const sector = document.getElementById('newZoneSectorInput').value;
             if (!name) {
-                showToast("⚠️ اكتب اسم المنطقة الجديدة أولاً!");
+                showToast("⚠️ اكتب اسم المنطقة أولاً!", "", "⚠️");
                 return;
             }
             state.sadatZones[name] = { lat: 30.3750, lon: 30.5200, sector };
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             document.getElementById('newZoneNameInput').value = '';
             populateZonesDropdowns();
             saveState();
-            showToast(`✅ تم إضافة منطقة (${name}) ومزامنتها فوراً!`);
+            showToast(`✅ تم إضافة منطقة (${name})!`);
         }
 
         function deleteSadatZone(zoneName) {
-            if (Object.keys(state.sadatZones).length <= 3) {
-                showToast("⚠️ لا يمكن حذف جميع المناطق الرئيسية!");
-                return;
-            }
+            if (Object.keys(state.sadatZones).length <= 3) return;
             delete state.sadatZones[zoneName];
-            state.settings.configVersion = (state.settings.configVersion || 9501) + 1;
+            state.settings.configVersion = (state.settings.configVersion || 9801) + 1;
             populateZonesDropdowns();
             saveState();
         }
@@ -2545,7 +2531,7 @@
                     return `
                         <div class="bg-slate-900 text-amber-300 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2">
                             <span>${meta.icon} ${st.name} (${(st.menu || []).length} منتج)</span>
-                            <button onclick="sendPromoBroadcastToStoreWhatsapp('${st.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-0.5 rounded-lg text-[10px] font-black flex items-center gap-1" title="مراسلة المحل عبر واتساب">
+                            <button onclick="sendPromoBroadcastToStoreWhatsapp('${st.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-0.5 rounded-lg text-[10px] font-black flex items-center gap-1">
                                 <i class="fa-brands fa-whatsapp"></i> مراسلة المحل
                             </button>
                             <button onclick="deleteStoreItemAdmin('${st.id}')" class="text-rose-400 font-black">✕</button>
@@ -2607,18 +2593,18 @@
             const lblTri = document.getElementById('lblRadioTri');
             if (lblMoto && lblTri) {
                 lblMoto.className = vehicleType === 'موتوسيكل'
-                    ? "flex items-center justify-center gap-2 p-2.5 rounded-2xl border-2 border-amber-400 bg-amber-500/10 cursor-pointer"
-                    : "flex items-center justify-center gap-2 p-2.5 rounded-2xl border-2 border-slate-800 bg-black cursor-pointer";
+                    ? "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-amber-400 bg-amber-500/10 cursor-pointer"
+                    : "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-slate-800 bg-black cursor-pointer";
                 lblTri.className = vehicleType === 'تريسيكل'
-                    ? "flex items-center justify-center gap-2 p-2.5 rounded-2xl border-2 border-indigo-400 bg-indigo-500/10 cursor-pointer"
-                    : "flex items-center justify-center gap-2 p-2.5 rounded-2xl border-2 border-slate-800 bg-black cursor-pointer";
+                    ? "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-indigo-400 bg-indigo-500/10 cursor-pointer"
+                    : "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-slate-800 bg-black cursor-pointer";
             }
 
             const result = calculateZonePricing(fromEl.value, toEl.value, vehicleType);
             document.getElementById('autoCalculatedFee').innerText = result.fee;
             const badge = document.getElementById('autoTierBadge');
             badge.innerText = result.tierLabel;
-            badge.className = `text-[11px] font-black px-2.5 py-0.5 rounded-full ${result.badgeClass}`;
+            badge.className = `text-xs font-black px-3 py-0.5 rounded-full ${result.badgeClass}`;
             document.getElementById('autoRouteExplanation').innerText = `من (${fromEl.value}) ⬅ إلى (${toEl.value})`;
         }
 
@@ -2658,9 +2644,9 @@
                     if (targetField === 'from') tempFromGPS = { lat, lon };
                     else tempToGPS = { lat, lon };
 
-                    feedbackEl.innerText = `✅ تم لقط الموقع بالـ GPS وتحديد المنطقة تلقائياً: (${detectedZone})!`;
+                    feedbackEl.innerText = `✅ تم لقط الموقع بالـ GPS وتحديد المنطقة: (${detectedZone})!`;
                     recalcClientZonePrice();
-                    showToast(`📍 تم تحديد منطقة (${detectedZone}) بالـ GPS وحساب السعر تلقائياً!`);
+                    showToast(`📍 تم تحديد (${detectedZone}) بالـ GPS!`, "تم تحديث سعر التوصيل تلقائياً", "📍");
                 },
                 () => {
                     if (targetField === 'from') tempFromGPS = { lat: fallbackCoords.lat, lon: fallbackCoords.lon };
@@ -2673,7 +2659,7 @@
         }
 
         // =========================================================================
-        // 5. روبوت الذكاء الاصطناعي لتحليل الـ Weak Points ومقترحات التحسين
+        // 5. روبوت الذكاء الاصطناعي لتحليل الـ Weak Points
         // =========================================================================
         function generateDailyWeakPointsAnalysis() {
             const reports = [];
@@ -2692,7 +2678,7 @@
                     badge: "تغطية ممتازة ✅",
                     border: "border-emerald-500",
                     title: "جميع الطلبات الحالية تم استلامها فوراً!",
-                    advice: "تواصل مع محلات الحلويات والمطاعم عبر زر واتساب لإضافة عروض نهاية الأسبوع."
+                    advice: "تواصل مع محلات الحلويات والمطاعم عبر زر واتساب لإضافة عروض جديدة."
                 });
             }
 
@@ -2768,7 +2754,7 @@
                     cap.lat = pos.coords.latitude;
                     cap.lon = pos.coords.longitude;
                     saveState();
-                    showToast("✅ تم تحديث موقعك بالـ GPS وترتيب الطلبات من الأقرب إليك!");
+                    showToast("✅ تم تحديث موقعك بالـ GPS!");
                 },
                 () => { renderAll(); },
                 { timeout: 5000 }
@@ -2798,7 +2784,7 @@
             const cap = getActiveCaptain();
             cap.plan = planType;
             saveState();
-            showToast(`✅ تم ضبط نظام عملك بنجاح!`);
+            showToast(`✅ تم ضبط نظام عملك!`);
         }
 
         function sendPaymentProofToOwnerWhatsapp() {
@@ -2854,7 +2840,7 @@
             document.getElementById('adminAddCaptainForm').reset();
             saveState();
             loadCaptainIntoAdminEditor(newCap.id);
-            showToast(`🎉 تم تسجيل الطيار (${name}) ومزامنته فوراً!`);
+            showToast(`🎉 تم تسجيل الطيار (${name})!`);
         }
 
         function loadCaptainIntoAdminEditor(capId) {
@@ -2883,7 +2869,7 @@
 
             saveState();
             loadCaptainIntoAdminEditor(cap.id);
-            showToast(`✅ تم حفظ تعديلات الطيار (${cap.name}) ومزامنتها!`);
+            showToast(`✅ تم حفظ تعديلات الطيار (${cap.name})!`);
         }
 
         function adminQuickApproveAndRechargeSelected() {
@@ -2897,7 +2883,7 @@
             cap.postpaidDue = 0;
             saveState();
             loadCaptainIntoAdminEditor(capId);
-            showToast(`✅ تم شحن +${pkg} ج في مسطرة الطيار (${cap.name})!`);
+            showToast(`✅ تم شحن +${pkg} ج في مسطرة (${cap.name})!`);
         }
 
         function openTrustReceiptForOrder(orderId) {
@@ -2908,13 +2894,13 @@
             const activeConcurrent = getCaptainActiveConcurrentCount(cap.id);
             const maxConcurrent = Number(state.settings.maxConcurrentActiveOrders) || 5;
             if (activeConcurrent >= maxConcurrent) {
-                showToast("⚠️ يرجى تسليم الطلبات التي في عهدتك أولاً.");
+                showToast("⚠️ سلّم الطلبات التي بعهدتك أولاً!", "", "⚠️");
                 return;
             }
 
             const maxPostpaid = Number(state.settings.maxPostpaidUnpaidOrders) || 4;
             if (cap.plan === "postpaid" && (cap.unpaidPostpaidCount || 0) >= maxPostpaid) {
-                showToast(`🚫 وصلت للحد الأقصى للسماحية (${maxPostpaid} أوردرات مؤجلة)!`);
+                showToast(`🚫 وصلت للحد الأقصى للسماحية (${maxPostpaid} أوردرات)!`, "", "🚫");
                 return;
             }
 
@@ -2923,12 +2909,11 @@
             const deductAmount = Number((order.fee * commRate).toFixed(2));
 
             if (cap.plan === 'fixed' && cap.balance < deductAmount) {
-                showToast(`⚠️ الباقي في مسطرتك (${cap.balance} ج) لا يكفي لخصم عمولة المشوار (${deductAmount} ج)!`);
+                showToast(`⚠️ رصيد مسطرتك (${cap.balance} ج) لا يكفي لخصم (${deductAmount} ج)!`, "", "⚠️");
                 return;
             }
 
             pendingOrderForTrustReceipt = order;
-            const nowStr = new Date().toLocaleString('ar-EG');
 
             document.getElementById('trustReceiptBodyContent').innerHTML = `
                 <div class="bg-amber-500/20 border border-amber-400 p-2.5 rounded-xl text-center mb-2">
@@ -2955,7 +2940,7 @@
 
         function confirmSignTrustReceiptAndAccept() {
             if (!document.getElementById('trustReceiptSignCheckbox').checked) {
-                showToast("⚠️ ضع علامة الموافقة على محضر استلام الأمانة أولاً!");
+                showToast("⚠️ ضع علامة الموافقة أولاً!", "", "⚠️");
                 return;
             }
             const order = pendingOrderForTrustReceipt;
@@ -2996,15 +2981,11 @@
             closeTrustReceiptModal();
             saveState();
 
-            showCenterScreenAlert(
-                `✅ تم استلام الطلب (#${order.storePickupCode || order.id}) في عهدتك!`,
-                `<div class="space-y-1.5">
-                    <div class="text-amber-400 font-black text-base">كود استلام المحل: #${order.storePickupCode || order.id}</div>
-                    <div>قل للمحل: <b>"طيار ثانية سيكل — طلب كود #${order.storePickupCode || order.id} بتاع (${order.client}) في (${order.to})"</b></div>
-                </div>`,
-                "كود مطابقة المحل والطيار 🔑",
+            showToast(
+                `✅ تم استلام الطلب (#${order.storePickupCode || order.id})!`,
+                `باسم (${order.client} - ${order.to})`,
                 "🛵",
-                `<button onclick="sendOrderToStoreWhatsapp('${order.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-2xl text-xs shadow flex items-center justify-center gap-1"><i class="fa-brands fa-whatsapp"></i> إبلاغ المحل بالواتساب</button>`
+                2200
             );
         }
 
@@ -3038,7 +3019,7 @@
             if (method === 'pin') {
                 const enteredPin = document.getElementById('clearancePinInput').value.trim();
                 if (enteredPin !== order.deliveryPin) {
-                    showToast("❌ كود التسليم غير مطابق للكود الموجود لدى العميل!");
+                    showToast("❌ كود التسليم غير مطابق!", "", "❌");
                     return;
                 }
             }
@@ -3049,13 +3030,13 @@
 
             closeClearanceModal();
             saveState();
-            showToast(`🛡️ تم إثبات التسليم وإصدار شهادة براءة الذمة بنجاح!`);
+            showToast(`🛡️ تم إثبات التسليم وإصدار براءة الذمة!`);
         }
 
         function prefillOrderFromProximityAlert() {
             closeNearbyCaptainModal();
             const alertZone = state.proximityAlert?.zone || Object.keys(state.sadatZones)[0];
-            openDeliveryCheckoutModal('موتوسيكل', `إرسال طلب مع الطيار القريب في (${alertZone})`, alertZone, '', '');
+            openDeliveryCheckoutPage('موتوسيكل', `إرسال طلب مع الطيار القريب في (${alertZone})`, alertZone, '', '', 'home');
         }
 
         function createClientOrder(e) {
@@ -3063,7 +3044,7 @@
 
             const session = getDeviceSession();
             if (session.role === 'captain' && !state.adminUnlocked) {
-                showToast("🚫 لا يمكن للطيار المسجل إنشاء طلبات!");
+                showToast("🚫 لا يمكن للطيار إنشاء طلبات!", "", "🚫");
                 return;
             }
 
@@ -3071,7 +3052,7 @@
             const phone = document.getElementById('ordClientPhone').value.trim();
 
             if (state.captains.some(c => c.phone === phone) && !state.adminUnlocked) {
-                showToast("🚫 هذا الرقم مسجل كطيار في المنصة!");
+                showToast("🚫 هذا الرقم مسجل كطيار في المنصة!", "", "🚫");
                 return;
             }
 
@@ -3088,7 +3069,6 @@
             const zTo = state.sadatZones[to] || Object.values(state.sadatZones)[0];
             const expectedComm = Number((pricing.fee * (state.settings.prepaidCommPercent / 100)).toFixed(2));
 
-            // البحث عن واتساب المحل تلقائياً لو كان من المحلات المسجلة
             const matchedStore = (state.storesCatalog || []).find(st => fromDetail.includes(st.name) || desc.includes(st.name));
             const storeWhatsapp = tempSelectedStoreWhatsapp || (matchedStore ? matchedStore.whatsapp : state.settings.ownerWhatsapp);
 
@@ -3130,31 +3110,20 @@
             document.getElementById('clientOrderForm').reset();
             document.getElementById('fromGpsFeedback').innerText = "";
             document.getElementById('toGpsFeedback').innerText = "";
-            closeDeliveryCheckoutModal();
 
             if (!state.adminUnlocked) {
                 saveDeviceSession({ role: 'client', captainId: null, loginCount: 1, loggedInNow: true });
             }
 
             saveState();
+            goToClientPage('home');
 
-            // إظهار نافذة التأكيد في منتصف الشاشة تماماً مع كود المحل وكود التسليم وزر إرسال الطلب لواتساب المحل
-            showCenterScreenAlert(
-                `🎉 تم تسجيل طلبك وإرساله للرادار بنجاح!`,
-                `<div class="space-y-2 text-right">
-                    <div class="bg-slate-900 p-2.5 rounded-xl border border-amber-500/50 text-center">
-                        <span class="text-[11px] text-amber-300 block">1. كود المحل والطيار (باسم ${newOrder.client} - ${newOrder.to}):</span>
-                        <b class="text-base text-white">#${newOrder.storePickupCode}</b>
-                    </div>
-                    <div class="bg-slate-900 p-2.5 rounded-xl border border-emerald-500/50 text-center">
-                        <span class="text-[11px] text-emerald-300 block">2. كود التسليم السري (أعطه للطيار عند باب البيت):</span>
-                        <b class="text-base text-amber-400">${newOrder.deliveryPin}</b>
-                    </div>
-                    <div class="text-center text-xs text-slate-300 pt-1">تكلفة التوصيل الثابتة: <b class="text-emerald-400">${newOrder.fee} جنيه</b></div>
-                </div>`,
-                "تأكيد الطلب في ثانية سيكل 🚀",
+            // إشعار في منتصف الشاشة يظهر لمدة ثانيتين ويختفي لوحده تلقائياً
+            showToast(
+                `🚀 تم إرسال طلبك بنجاح!`,
+                `كود المحل: #${newOrder.storePickupCode} • كود التسليم: ${newOrder.deliveryPin}`,
                 "✅",
-                `<button onclick="sendOrderToStoreWhatsapp('${newOrder.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-2xl text-xs shadow-lg flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp text-sm"></i> إرسال الطلب لواتساب المحل لتجهيزه</button>`
+                2200
             );
         }
 
@@ -3186,7 +3155,7 @@
 
         function saveAdminSettings() {
             const s = state.settings;
-            s.configVersion = (s.configVersion || 9501) + 1;
+            s.configVersion = (s.configVersion || 9801) + 1;
             const sheetUrlEl = document.getElementById('admGoogleSheetWebhookUrl');
             if (sheetUrlEl && sheetUrlEl.value.trim()) {
                 s.googleSheetWebAppUrl = sheetUrlEl.value.trim();
@@ -3216,7 +3185,7 @@
 
             recalcClientZonePrice();
             saveState();
-            showToast("🚀 تم حفظ وتعميم جميع التعديلات والأقسام والمنيو لحظياً!");
+            showToast("🚀 تم حفظ وتعميم جميع التعديلات لحظياً!");
         }
 
         function exportUpdatedHtmlForGithub() {
@@ -3228,7 +3197,7 @@
             fullHtml = fullHtml.replace(/\/\*DEFAULT_STATE_START\*\/[\s\S]*?\/\*DEFAULT_STATE_END\*\//, newDefaultBlock);
 
             navigator.clipboard.writeText(fullHtml).then(() => {
-                showToast("📋 تم نسخ كود الموقع كاملاً! الصقه في ملف index.html على GitHub.");
+                showToast("📋 تم نسخ كود الموقع كاملاً لـ GitHub!");
             });
         }
 
@@ -3340,7 +3309,7 @@
                     <a href="${gMapsUrl}" target="_blank" class="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs shrink-0">📍 الخريطة</a>
                 `;
             } else {
-                hotspotBanner.innerHTML = `<div class="text-xs font-bold text-slate-300">لا توجد طلبات متاحة حالياً — سيظهر إشعار في منتصف الشاشة فور نزول طلب!</div>`;
+                hotspotBanner.innerHTML = `<div class="text-xs font-bold text-slate-300">لا توجد طلبات متاحة حالياً!</div>`;
             }
 
             const capQuery = (document.getElementById('captainSearchInput')?.value || "").toLowerCase();
@@ -3565,7 +3534,6 @@
             applyRoleSeparationUI();
             loadCaptainIntoAdminEditor(state.activeCaptainId);
 
-            // إخفاء شاشة البداية الفضائية بعد 2.2 ثانية بنعومة
             setTimeout(hideCosmicSplashScreen, 2200);
 
             const session = getDeviceSession();
@@ -3574,6 +3542,7 @@
                 switchTab('captain');
             } else {
                 switchTab('client');
+                goToClientPage('home');
             }
 
             pullStateFromGoogleSheet(false);
