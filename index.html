@@ -2870,5 +2870,242 @@
             setInterval(() => { pullStateFromGoogleSheet(false); }, 4000);
         };
     </script>
+    <!-- محرك توليد صفحات المحلات التفاعلية - ثانية سيكل مدينة السادات -->
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const storeName = params.get('preview');
+  if (!storeName) return;
+
+  const storeCat = params.get('cat') || 'مطعم';
+  const storeRate = params.get('rate') || '4.8';
+  const storeRev = params.get('rev') || '50+';
+  const storeAddr = params.get('addr') || 'مدينة السادات';
+  const storePhone = params.get('ph') || '';
+
+  // ⚠️ ضع رقم واتساب الإدارة الخاص بك هنا (يبدأ بـ 20)
+  const ADMIN_WHATSAPP = "201000000000";
+
+  const fullText = (storeCat + " " + storeName).toLowerCase();
+  let isPharmacy = fullText.includes("صيدل") || fullText.includes("pharmacy") || fullText.includes("دكتور");
+  let themeColor = isPharmacy ? "#0284c7" : "#ea580c";
+  let themeGradient = isPharmacy ? "linear-gradient(135deg, #0369a1, #0ea5e9)" : "linear-gradient(135deg, #c2410c, #f97316)";
+
+  // قوائم المنتجات الذكية حسب تخصص كل محل في السادات
+  let menuItems = [
+    { id: 1, name: "وجبة كومبو سبيشيال", desc: "تقدم مع بطاطس مقرمشة ومشروب غازي", price: 145, icon: "🍱" },
+    { id: 2, name: "ساندوتش سوبر إكسترا", desc: "عيش طازج مع صوصات خاصة", price: 85, icon: "🥪" },
+    { id: 3, name: "وجبة التوفير العائلية", desc: "تكفي 4 أفراد مع السلطات والعيش", price: 380, icon: "🍗" },
+    { id: 4, name: "إضافة بطاطس وصوص شيدر", desc: "حجم كبير ساخن", price: 45, icon: "🍟" }
+  ];
+
+  if (isPharmacy) {
+    menuItems = [
+      { id: 1, name: "أدوية روشتة وعلاج شهري", desc: "يتم تحضير الروشتة ومراجعتها مع الصيدلي فوراً", price: 0, priceLabel: "حسب التسعيرة", icon: "💊" },
+      { id: 2, name: "مسكنات وخافض حرارة طوارئ", desc: "توصيل سريع في دقائق لباب البيت", price: 0, priceLabel: "بسعر الصيدلية", icon: "🌡️" },
+      { id: 3, name: "حفاضات وألبان ومستلزمات أطفال", desc: "جميع المقاسات والأنواع متوفرة", price: 0, priceLabel: "متاح الآن", icon: "🍼" },
+      { id: 4, name: "منتجات عناية بالبشرة والشعر", desc: "أصلي 100% من الصيدلية مباشرة", price: 0, priceLabel: "متاح الآن", icon: "✨" }
+    ];
+  } else if (fullText.includes("مشوي") || fullText.includes("كباب") || fullText.includes("حواوشي")) {
+    menuItems = [
+      { id: 1, name: "كيلو مشويات مشكل على الفحم", desc: "كباب، كفتة، شيش طاووق، مع أرز وسلطات وعيش", price: 540, icon: "🥩" },
+      { id: 2, name: "وجبة نص فرخة مشوية على الفحم", desc: "مع أرز بسمتي، طحينة، وسلطة خضراء", price: 165, icon: "🍗" },
+      { id: 3, name: "طلب كفتة ضاني (نصف كيلو)", desc: "مشوية على الفحم مع البقدونس والطحينة", price: 260, icon: "🔥" },
+      { id: 4, name: "حواوشي بلدي إكسترا لحمة", desc: "عيش بلدي مقرمش متبل بالخلطة السرية", price: 75, icon: "🥙" }
+    ];
+  } else if (fullText.includes("سوري") || fullText.includes("شاورما") || fullText.includes("بروستد")) {
+    menuItems = [
+      { id: 1, name: "وجبة شاورما عربي دبل", desc: "تقدم مع بطاطس، تومية سوري، ومخلل", price: 140, icon: "🌯" },
+      { id: 2, name: "فتة شاورما سوري إكسترا", desc: "أرز بسمتي، عيش محمص، شاورما وصوص تومية", price: 130, icon: "🍛" },
+      { id: 3, name: "وجبة بروستد 4 قطع (حار / عادي)", desc: "مع بطاطس، كول سلو، تومية وعيش", price: 175, icon: "🍗" },
+      { id: 4, name: "ساندوتش شاورما صاروخ", desc: "عيش صاج محمص مع التومية والمخلل", price: 80, icon: "🥖" }
+    ];
+  } else if (fullText.includes("كشري") || fullText.includes("كشرى") || fullText.includes("طاجن")) {
+    menuItems = [
+      { id: 1, name: "علبة كشري سوبر إكسترا", desc: "مع التقلية المقرمشة، الدقة، والشطة الزيت", price: 50, icon: "🍲" },
+      { id: 2, name: "طاجن مكرونة باللحمة المفرومة", desc: "طاجن فرن ساخن غني بالصلصة واللحم", price: 65, icon: "🥘" },
+      { id: 3, name: "طاجن مكرونة بالفراخ والموزاريلا", desc: "قطع صدور فراخ متبلة في الفرن", price: 75, icon: "🧀" },
+      { id: 4, name: "أرز بلبن فرن بالمكسرات", desc: "طازج يومياً بالقشطة والمكسرات", price: 35, icon: "🍨" }
+    ];
+  } else if (fullText.includes("سمك") || fullText.includes("أسماك") || fullText.includes("بحري")) {
+    menuItems = [
+      { id: 1, name: "وجبة سمك بلطي مقلي / مشوي", desc: "مع أرز صيادية، سلطة خضراء وطحينة", price: 160, icon: "🐟" },
+      { id: 2, name: "طاجن سي فود بالكريمة", desc: "جمبري، كاليماري، فيليه مع الكريمة الغنية", price: 220, icon: "🦐" },
+      { id: 3, name: "كيلو بوري مشوي زيت وليمون", desc: "طازج بالخلطة المميزة مع الأرز والسلطات", price: 290, icon: "🍋" },
+      { id: 4, name: "ساندوتش جمبري مقرمش", desc: "مع صوص التارتار والجرجير", price: 110, icon: "🥖" }
+    ];
+  } else if (fullText.includes("حلوان") || fullText.includes("كافيه") || fullText.includes("قهو") || fullText.includes("عصير")) {
+    menuItems = [
+      { id: 1, name: "بوكس حلويات شرقي مشكل", desc: "بسبوسة، كنافة، جلاش بالمكسرات والسمن البلدي", price: 210, icon: "🥮" },
+      { id: 2, name: "طاجن نوتيلا ولوتس ساخن", desc: "غني بالصوصات والمكسرات", price: 85, icon: "🍫" },
+      { id: 3, name: "عصير مانجو وفراولة فريش", desc: "طبيعي 100% طازج", price: 55, icon: "🍹" },
+      { id: 4, name: "وافل شوكولاتة وفواكه", desc: "مقرمش ويحضر فور الطلب", price: 75, icon: "🧇" }
+    ];
+  } else if (fullText.includes("ماركت") || fullText.includes("بقال") || fullText.includes("عطار")) {
+    menuItems = [
+      { id: 1, name: "كتابة طلبات البيت والسوبر ماركت", desc: "اكتب كل طلباتك في ملاحظة واحدة وتوصلك فوراً", price: 0, priceLabel: "بسعر المحل", icon: "🛒" },
+      { id: 2, name: "منتجات ألبان وجبن وبيض طازج", desc: "توصيل سريع لحفظ البرودة", price: 0, priceLabel: "بسعر المحل", icon: "🧀" },
+      { id: 3, name: "مياه معدنية ومشروبات غازية (كرتونة/فرط)", desc: "متاح توصيل بموتوسيكل أو تروسيكل للكميات", price: 0, priceLabel: "بسعر المحل", icon: "🥤" },
+      { id: 4, name: "منظفات ومستلزمات منزلية", desc: "جميع الأصناف متاحة", price: 0, priceLabel: "بسعر المحل", icon: "🧼" }
+    ];
+  }
+
+  let cartCount = 0;
+  let cartTotal = 0;
+
+  const pageModal = document.createElement('div');
+  pageModal.id = "sanya-merchant-preview";
+  pageModal.style.cssText = 'position:fixed;inset:0;background:#f1f5f9;z-index:999999;overflow-y:auto;direction:rtl;font-family:Tajawal,Cairo,sans-serif;color:#0f172a;padding-bottom:130px;';
+
+  const acceptMsg = encodeURIComponent(
+    "أهلاً إدارة ثانية سيكل 🛵✨\n" +
+    "أنا صاحب/مسؤول (" + storeName + ").\n" +
+    "شفت صفحة المحل بتاعتنا على المنصة وعجبتني جداً، وموافق على تفعيل الحساب مجاناً بنظام النسبة (8% على الطلب الفعلي).\n" +
+    "وده المنيو / تفاصيل المحل لاعتماد الصفحة:"
+  );
+
+  pageModal.innerHTML = `
+    <!-- شريط علوي ترحيبي خاص بصاحب المحل -->
+    <div style="background:#0f172a;color:#fff;padding:10px 16px;font-size:13px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="background:#22c55e;color:#fff;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:bold;">نسخة معاينة التاجر</span>
+        <span>هكذا يظهر <b>${storeName}</b> لعملاء مدينة السادات</span>
+      </div>
+      <button id="close-preview-btn" style="background:rgba(255,255,255,0.15);color:#fff;border:none;padding:5px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold;">
+        تصفح التطبيق الرئيسي ✕
+      </button>
+    </div>
+
+    <div style="max-width:520px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 30px rgba(0,0,0,0.06);">
+      <!-- غلاف وبروفايل المحل -->
+      <div style="background:${themeGradient};color:#fff;padding:24px 20px 20px;border-radius:0 0 26px 26px;position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+          <div>
+            <span style="background:rgba(0,0,0,0.25);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold;display:inline-block;margin-bottom:8px;">
+              🛵 شريك مرشح في ثانية سيكل • ${storeCat}
+            </span>
+            <h1 style="margin:0 0 6px;font-size:24px;font-weight:800;line-height:1.3;">${storeName}</h1>
+            <p style="margin:0;font-size:13px;opacity:0.92;">📍 ${storeAddr}</p>
+          </div>
+          <div style="background:#fff;color:#0f172a;padding:8px 12px;border-radius:16px;text-align:center;min-width:68px;box-shadow:0 8px 20px rgba(0,0,0,0.15);">
+            <div style="font-size:17px;font-weight:800;color:#d97706;">⭐ ${storeRate}</div>
+            <div style="font-size:11px;color:#64748b;font-weight:bold;">${storeRev} تقييم</div>
+          </div>
+        </div>
+
+        <!-- مميزات التوصيل للمحل -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;background:rgba(255,255,255,0.14);padding:10px;border-radius:16px;text-align:center;font-size:12px;">
+          <div>
+            <div style="font-weight:bold;">⏱️ 20-35 دقيقة</div>
+            <div style="font-size:11px;opacity:0.85;">توصيل بالـ GPS</div>
+          </div>
+          <div style="border-right:1px solid rgba(255,255,255,0.25);border-left:1px solid rgba(255,255,255,0.25);">
+            <div style="font-weight:bold;">🛵 موتوسيكل / تروسيكل</div>
+            <div style="font-size:11px;opacity:0.85;">أسطول جاهز</div>
+          </div>
+          <div>
+            <div style="font-weight:bold;">🟢 متاح الآن</div>
+            <div style="font-size:11px;opacity:0.85;">استقبال فوري</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:18px 16px;">
+        ${isPharmacy ? `
+          <!-- قسم رفع الروشتة المخصص للصيدليات -->
+          <div style="background:#f0f9ff;border:2px dashed #0284c7;border-radius:18px;padding:16px;text-align:center;margin-bottom:18px;">
+            <div style="font-size:32px;margin-bottom:6px;">📸💊</div>
+            <h3 style="margin:0 0 4px;font-size:16px;color:#0369a1;">تصوير أو رفع الروشتة الطبية مباشرة</h3>
+            <p style="margin:0 0 12px;font-size:12px;color:#475569;">يستطيع العميل تصوير الروشتة أو علبة الدواء لتصل إلى <b>${storeName}</b> فوراً مع موقع العميل بالـ GPS</p>
+            <button onclick="alert('✨ هذه محاكاة لميزة رفع الروشتة! عند تفعيل حساب الصيدلية، ستصلكم صورة الروشتة مباشرة من العميل مع كابتن التوصيل.')" style="background:#0284c7;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-weight:bold;font-size:13px;cursor:pointer;">
+              📷 جرّب زر إرسال الروشتة الآن
+            </button>
+          </div>
+        ` : ''}
+
+        <!-- تنبيه للمنيو التجريبي -->
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:12px;margin-bottom:16px;font-size:13px;color:#92400e;line-height:1.5;">
+          💡 <b>ملاحظة لإدارة (${storeName}):</b> الأصناف والأسعار بالأسفل هي <b>نموذج تجريبي</b> لتجربة شكل الطلب. بمجرد موافقتكم نضع <b>المنيو الحقيقي وأسعاركم الفعلية</b> مجاناً!
+        </div>
+
+        <h3 style="margin:0 0 12px;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:space-between;">
+          <span>📋 قائمة الطلبات التفاعلية (جرّب الإضافة للسلة)</span>
+        </h3>
+
+        <!-- قائمة الأصناف -->
+        <div id="preview-menu-list" style="display:flex;flex-direction:column;gap:12px;">
+          ${menuItems.map(item => `
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e2e8f0;padding:12px 14px;border-radius:16px;box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+              <div style="display:flex;align-items:center;gap:12px;padding-left:10px;">
+                <div style="width:48px;height:48px;border-radius:14px;background:#f8fafc;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1px solid #e2e8f0;">
+                  ${item.icon}
+                </div>
+                <div>
+                  <div style="font-weight:800;font-size:15px;color:#0f172a;margin-bottom:3px;">${item.name}</div>
+                  <div style="font-size:12px;color:#64748b;margin-bottom:5px;">${item.desc}</div>
+                  <div style="font-size:13px;font-weight:800;color:${themeColor};">
+                    ${item.price > 0 ? item.price + ' ج.م' : item.priceLabel}
+                  </div>
+                </div>
+              </div>
+              <button class="add-demo-item" data-price="${item.price}" style="background:${themeColor};color:#fff;border:none;padding:8px 14px;border-radius:12px;font-weight:bold;font-size:13px;cursor:pointer;flex-shrink:0;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                + أضف
+              </button>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- معاينة سلة الطلبات عند التجربة -->
+        <div id="demo-cart-box" style="display:none;margin-top:16px;background:#f0fdf4;border:1px solid #86efac;padding:12px 16px;border-radius:14px;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-weight:800;font-size:14px;color:#166534;">🛒 تجربة سلة العميل: <span id="demo-cart-count">0</span> أصناف</div>
+            <div style="font-size:12px;color:#15803d;">إجمالي الطلب التجريبي: <b id="demo-cart-total">0</b> ج.م + حساب التوصيل بالـ GPS</div>
+          </div>
+          <span style="font-size:12px;background:#16a34a;color:#fff;padding:5px 10px;border-radius:8px;font-weight:bold;">جاهز للإرسال للكابتن ✓</span>
+        </div>
+
+        <!-- شرح مميزات التعاقد للتاجر -->
+        <div style="margin-top:22px;background:#f8fafc;border-radius:18px;padding:16px;border:1px solid #e2e8f0;">
+          <h4 style="margin:0 0 10px;font-size:15px;color:#0f172a;">🤝 لماذا ينضم (${storeName}) لمنصة ثانية سيكل؟</h4>
+          <div style="font-size:13px;color:#334155;display:flex;flex-direction:column;gap:8px;">
+            <div>✅ <b>مجاني 100% بدون أي رسوم تسجيل أو اشتراك شهري.</b></div>
+            <div>✅ <b>عمولة تسويق رمزية (8% فقط)</b> على الأوردر الفعلي الذي نبيعه لك (لو مفيش طلبات، مفيش أي التزام عليك!).</div>
+            <div>✅ <b>ربط مباشر بالـ GPS وكود تأكيد استلام</b> يضمن وصول الطلب للعميل بأمان وسرعة في كل مناطق السادات.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- الشريط السفلي الثابت لاعتماد وتفعيل صفحة المحل -->
+    <div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;padding:12px 16px;box-shadow:0 -8px 25px rgba(0,0,0,0.1);z-index:60;">
+      <div style="max-width:520px;margin:0 auto;display:flex;gap:10px;align-items:center;">
+        <a href="https://wa.me/${ADMIN_WHATSAPP}?text=${acceptMsg}" target="_blank" style="flex:1;background:#16a34a;color:#fff;text-align:center;padding:14px;border-radius:14px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 6px 18px rgba(22,163,74,0.35);">
+          ✅ اعتمد صفحتي مجاناً وأرسل المنيو الحقيقي
+        </a>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(pageModal);
+
+  // تفعيل أزرار تجربة الإضافة للسلة داخل المعاينة
+  pageModal.querySelectorAll('.add-demo-item').forEach(btn => {
+    btn.addEventListener('click', function() {
+      cartCount++;
+      cartTotal += parseInt(this.getAttribute('data-price') || '0', 10);
+      document.getElementById('demo-cart-count').innerText = cartCount;
+      document.getElementById('demo-cart-total').innerText = cartTotal;
+      document.getElementById('demo-cart-box').style.display = 'flex';
+      this.innerText = "✓ تمت الإضافة";
+      this.style.background = "#16a34a";
+    });
+  });
+
+  // زر إغلاق المعاينة لتصفح باقي التطبيق
+  document.getElementById('close-preview-btn').addEventListener('click', function() {
+    pageModal.remove();
+  });
+})();
+</script>
 </body>
 </html>
